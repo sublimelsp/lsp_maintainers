@@ -1,0 +1,17 @@
+[
+    {
+        "caption": "Preferences: LSP Maintainers Settings",
+        "command": "edit_settings",
+        "args": {
+            "base_file": "${packages}/lsp_maintainers/lsp_maintainers.sublime-settings",
+        }
+    },
+    {
+        "caption": "LSP Maintainers: Clone Projects",
+        "command": "clone_lsp_projects"
+    },
+    {
+        "caption": "LSP Maintainers: Open Projects",
+        "command": "open_lsp_projects"
+    }
+]

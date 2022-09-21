@@ -1,0 +1,221 @@
+{
+    "projects": [
+        // Uncomment the project you would like to maintain:
+        // {
+        //     "name": "LSP",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP.git ${packages}/LSP"
+        // },
+        // {
+        //     "name": "LSP-anakin",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-anakin.git ${packages}/LSP-anakin"
+        // },
+        // {
+        //     "name": "LSP-angular",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-angular.git ${packages}/LSP-angular"
+        // },
+        // {
+        //     "name": "LSP-astro",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-astro.git ${packages}/LSP-astro"
+        // },
+        // {
+        //     "name": "LSP-bash",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-bash.git ${packages}/LSP-bash"
+        // },
+        // {
+        //     "name": "LSP-Bicep",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-Bicep.git ${packages}/LSP-Bicep"
+        // },
+        // {
+        //     "name": "LSP-cmake",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-cmake.git ${packages}/LSP-cmake"
+        // },
+        // {
+        //     "name": "LSP-copilot",
+        //     "setup_command": "git clone git@github.com:TheSecEng/LSP-copilot.git ${packages}/LSP-copilot"
+        // },
+        // {
+        //     "name": "LSP-css",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-css.git ${packages}/LSP-css"
+        // },
+        // {
+        //     "name": "LSP-Dart",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-Dart.git ${packages}/LSP-Dart"
+        // },
+        // {
+        //     "name": "LSP-Deno",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-Deno.git ${packages}/LSP-Deno"
+        // },
+        // {
+        //     "name": "LSP-dockerfile",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-dockerfile.git ${packages}/LSP-dockerfile"
+        // },
+        // {
+        //     "name": "LSP-elixir",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-elixir.git ${packages}/LSP-elixir"
+        // },
+        // {
+        //     "name": "LSP-elm",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-elm.git ${packages}/LSP-elm"
+        // },
+        // {
+        //     "name": "LSP-eslint",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-eslint.git ${packages}/LSP-eslint"
+        // },
+        // {
+        //     "name": "LSP-file-watcher-chokidar",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-file-watcher-chokidar.git ${packages}/LSP-file-watcher-chokidar"
+        // },
+        // {
+        //     "name": "LSP-flow",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-flow.git ${packages}/LSP-flow"
+        // },
+        // {
+        //     "name": "LSP-gopls",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-gopls.git ${packages}/LSP-gopls"
+        // },
+        // {
+        //     "name": "LSP-Grammarly",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-Grammarly.git ${packages}/LSP-Grammarly"
+        // },
+        // {
+        //     "name": "LSP-graphql",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-graphql.git ${packages}/LSP-graphql"
+        // },
+        // {
+        //     "name": "LSP-html",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-html.git ${packages}/LSP-html"
+        // },
+        // {
+        //     "name": "LSP-intelephense",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-intelephense.git ${packages}/LSP-intelephense"
+        // },
+        // {
+        //     "name": "LSP-jdtls",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-jdtls.git ${packages}/LSP-jdtls"
+        // },
+        // {
+        //     "name": "LSP-json",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-json.git ${packages}/LSP-json"
+        // },
+        // {
+        //     "name": "LSP-julia",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-julia.git ${packages}/LSP-julia"
+        // },
+        // {
+        //     "name": "LSP-kotlin",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-kotlin.git ${packages}/LSP-kotlin"
+        // },
+        // {
+        //     "name": "LSP-lemminx",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-lemminx.git ${packages}/LSP-lemminx"
+        // },
+        // {
+        //     "name": "LSP-leo",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-leo.git ${packages}/LSP-leo"
+        // },
+        // {
+        //     "name": "LSP-ltex-ls",
+        //     "setup_command": "git clone git@github.com:LDAP/LSP-ltex-ls.git ${packages}/LSP-leo"
+        // },
+        // {
+        //     "name": "LSP-marksman",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-marksman.git ${packages}/LSP-marksman"
+        // },
+        // {
+        //     "name": "LSP-metals",
+        //     "setup_command": "git clone git@github.com:scalameta/metals-sublime.git ${packages}/LSP-metals"
+        // },
+        // {
+        //     "name": "LSP-OmniSharp",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-OmniSharp.git ${packages}/LSP-OmniSharp"
+        // },
+        // {
+        //     "name": "LSP-PowerShellEditorServices",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-PowerShellEditorServices.git ${packages}/LSP-PowerShellEditorServices"
+        // },
+        // {
+        //     "name": "LSP-prisma",
+        //     "setup_command": "git clone git@github.com:Sublime-Instincts/LSP-prisma.git ${packages}/LSP-prisma"
+        // },
+        // {
+        //     "name": "LSP-promql",
+        //     "setup_command": "git clone git@github.com:prometheus-community/sublimelsp-promql.git ${packages}/LSP-promql"
+        // },
+        // {
+        //     "name": "LSP-pylsp",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-pylsp.git ${packages}/LSP-pylsp"
+        // },
+        // {
+        //     "name": "LSP-pyright",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-pyright.git ${packages}/LSP-pyright"
+        // },
+        // {
+        //     "name": "LSP-pyright",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-pyright.git ${packages}/LSP-pyright"
+        // },
+        // {
+        //     "name": "LSP-R",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-R.git ${packages}/LSP-R"
+        // },
+        // {
+        //     "name": "LSP-rust-analyzer",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-rust-analyzer.git ${packages}/LSP-rust-analyzer"
+        // },
+        // {
+        //     "name": "LSP-Serenata",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-Serenata.git ${packages}/LSP-Serenata"
+        // },
+        // {
+        //     "name": "LSP-SonarLint",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-SonarLint.git ${packages}/LSP-SonarLint"
+        // },
+        // {
+        //     "name": "LSP-SourceKit",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-SourceKit.git ${packages}/LSP-SourceKit"
+        // },
+        // {
+        //     "name": "LSP-stylelint",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-stylelint.git ${packages}/LSP-stylelint"
+        // },
+        // {
+        //     "name": "LSP-svelte",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-svelte.git ${packages}/LSP-svelte"
+        // },
+        // {
+        //     "name": "LSP-tailwindcss",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-tailwindcss.git ${packages}/LSP-tailwindcss"
+        // },
+        // {
+        //     "name": "LSP-terraform",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-terraform.git ${packages}/LSP-terraform"
+        // },
+        // {
+        //     "name": "LSP-tagml",
+        //     "setup_command": "git clone git@github.com:HuygensING/LSP-tagml.git ${packages}/LSP-tagml"
+        // },
+        // {
+        //     "name": "LSP-TexLab",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-TexLab.git ${packages}/LSP-TexLab"
+        // },
+        // {
+        //     "name": "LSP-typescript",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-typescript.git ${packages}/LSP-typescript"
+        // },
+        // {
+        //     "name": "LSP-volar",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-volar.git ${packages}/LSP-volar"
+        // },
+        // {
+        //     "name": "LSP-vue",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-vue.git ${packages}/LSP-vue"
+        // },
+        // {
+        //     "name": "LSP-yaml",
+        //     "setup_command": "git clone git@github.com:sublimelsp/LSP-yaml.git ${packages}/LSP-yaml"
+        // },
+        // {
+        //     "name": "lsp_utils",
+        //     "setup_command": "git clone git@github.com:sublimelsp/lsp_utils.git ${packages}/lsp_utils"
+        // }
+    ]
+}
