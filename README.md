@@ -2,6 +2,7 @@
 This plugin helps setup a sublime project containing all LSP-plugins.
 
 Why?
+
 Should help when doing breaking changes to see what plugins are affected.
 
 Commands:
