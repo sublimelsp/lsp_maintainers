@@ -9,6 +9,6 @@ Commands:
 
 `Preferences: LSP Maintainers Settings` - configure what LSP-* will be included in the project.
 
-`Preferences: LSP Maintainers: Clone Projects` - will clone the specified LSP-* plugins in the sublime package directory.
+`LSP Maintainers: Clone Projects` - will clone the specified LSP-* plugins in the sublime package directory.
 
-`Preferences: LSP Maintainers: Open Projects` - will open the those LSP-* plugins in the current window.
+`LSP Maintainers: Open Projects` - will open the those LSP-* plugins in the current window.
