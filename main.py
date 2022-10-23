@@ -13,17 +13,19 @@ class CloneLspProjectsCommand(sublime_plugin.WindowCommand):
 def clone(window: sublime.Window):
     packages_path = sublime.packages_path()
     variables = window.extract_variables()
-    projects = sublime.load_settings("lsp_maintainers.sublime-settings").get('projects')
+    packages = sublime.load_settings("lsp_maintainers.sublime-settings").get('packages')
 
-    for project in projects:
-        already_exist = os.path.exists(os.path.join(packages_path, project['name']))
+    for package in packages:
+        already_exist = os.path.exists(os.path.join(packages_path, package['name']))
         if already_exist:
-            print('Project {} already exist'.format(project['name']))
+            print('Project {} already exist'.format(package['name']))
             continue
-        cmd = project['setup_command'].split(" ")
+        ssh_repo_link = package['details'].replace("https://github.com/", "git@github.com:") + ".git"
+        setup_command = "git clone {} ${{packages}}/{}".format(ssh_repo_link, package['name'])
+        cmd = setup_command.split(" ")
         cmd = sublime.expand_variables(cmd, variables)
-        print('Running setup command for {}:\n{}'.format(project['name'], cmd))
-        window.status_message('Setting up {}.'.format(project['name']))
+        print('Running setup command for {}:\n{}'.format(package['name'], cmd))
+        window.status_message('Setting up {}.'.format(package['name']))
         run_command(cmd)
 
     sublime.message_dialog('LSP maintainer: Cloning is done.')
@@ -34,11 +36,11 @@ class OpenLspProjectsCommand(sublime_plugin.WindowCommand):
         packages_path = sublime.packages_path()
         project_data = self.window.project_data() or {}
         folders = project_data.get('folders') or []
-        projects = sublime.load_settings("lsp_maintainers.sublime-settings").get('projects')
+        packages = sublime.load_settings("lsp_maintainers.sublime-settings").get('packages')
 
-        for project in projects:
-            plugin_path = os.path.join(packages_path, project['name'])
-            folders.append({"path": plugin_path})
+        for package in packages:
+            package_path = os.path.join(packages_path, package['name'])
+            folders.append({"path": package_path})
         self.window.set_project_data({
             'folders': folders
         })
