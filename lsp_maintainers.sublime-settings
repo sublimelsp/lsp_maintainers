@@ -878,6 +878,14 @@
             "details": "https://github.com/sublimelsp/LSP-SonarLint",
             "name": "LSP-SonarLint"
         },
+        {
+            "details": "https://github.com/sublimelsp/LSP-cspell",
+            "name": "LSP-cspell"
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-rome",
+            "name": "LSP-rome"
+        },
         // libs
         {
             "details": "https://github.com/sublimelsp/lsp_utils",
