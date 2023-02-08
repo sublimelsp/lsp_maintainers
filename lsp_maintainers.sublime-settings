@@ -892,6 +892,10 @@
             "name": "lsp_utils"
         },
         {
+            "details": "https://github.com/sublimelsp/LSP-performance-test",
+            "name": "LSP-performance-test"
+        },
+        {
             "details": "https://github.com/sublimelsp/repository",
             "name": "repository"
         }
