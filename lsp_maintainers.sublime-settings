@@ -902,6 +902,26 @@
             "details": "https://github.com/sublimelsp/LSP-rome",
             "name": "LSP-rome"
         },
+        {
+            "details": "https://github.com/sublimelsp/LSP-ruff",
+            "name": "LSP-ruff"
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-biome",
+            "name": "LSP-biome"
+        },
+        {
+            "details": "https://github.com/gno-playground/LSP-gnols",
+            "name": "LSP-gnols"
+        },
+        {
+            "details": "https://github.com/martinbarez/LSP-VHDL-ls",
+            "name": "LSP-VHDL-ls"
+        },
+        {
+            "details": "https://github.com/errata-ai/LSP-vale-ls",
+            "name": "LSP-vale-ls"
+        },
         // libs
         {
             "details": "https://github.com/sublimelsp/lsp_utils",
