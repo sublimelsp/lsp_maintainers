@@ -115,7 +115,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -130,6 +130,16 @@
                 "code navigation",
                 "intellisense"
             ],
+            "releases": [
+                {
+                    "sublime_text": ">=4070",
+                    "tags": true
+                }
+            ]
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-biome",
+            "name": "LSP-biome",
             "releases": [
                 {
                     "sublime_text": ">=4070",
@@ -174,6 +184,21 @@
             ]
         },
         {
+            "details": "https://github.com/sublimelsp/LSP-cspell",
+            "name": "LSP-cspell",
+            "labels": [
+                "linting",
+                "cspell",
+                "spell"
+            ],
+            "releases": [
+                {
+                    "sublime_text": ">=4126",
+                    "tags": true
+                }
+            ]
+        },
+        {
             "details": "https://github.com/sublimelsp/LSP-css",
             "name": "LSP-css",
             "labels": [
@@ -185,7 +210,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": "3154 - 4147",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4148",
                     "tags": true
                 }
             ]
@@ -236,7 +265,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -253,7 +282,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -270,7 +299,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -283,7 +312,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": "3092 - 3999",
+                    "sublime_text": "3154 - 3999",
                     "tags": "st3-"
                 },
                 {
@@ -305,6 +334,22 @@
         {
             "details": "https://github.com/sublimelsp/LSP-flow",
             "name": "LSP-flow",
+            "releases": [
+                {
+                    "sublime_text": ">=4070",
+                    "tags": true
+                }
+            ]
+        },
+        {
+            "details": "https://github.com/jdkato/LSP-gnols",
+            "name": "LSP-gnols",
+            "author": "jdkato",
+            "labels": [
+                "auto-complete",
+                "linting",
+                "intellisense"
+            ],
             "releases": [
                 {
                     "sublime_text": ">=4070",
@@ -354,7 +399,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -371,7 +416,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": "3154 - 4147",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4148",
                     "tags": true
                 }
             ]
@@ -388,7 +437,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -422,7 +471,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": "3154 - 4147",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4148",
                     "tags": true
                 }
             ]
@@ -441,6 +494,25 @@
             "releases": [
                 {
                     "sublime_text": ">=4095",
+                    "tags": true
+                }
+            ]
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-kotlin",
+            "name": "LSP-kotlin",
+            "labels": [
+                "java",
+                "kotlin",
+                "auto-complete",
+                "linting",
+                "formatting",
+                "code navigation",
+                "intellisense"
+            ],
+            "releases": [
+                {
+                    "sublime_text": ">=4070",
                     "tags": true
                 }
             ]
@@ -469,7 +541,9 @@
         {
             "details": "https://github.com/sublimelsp/LSP-leo",
             "name": "LSP-leo",
-            "previous_names": ["LSP-aleo-developer"],
+            "previous_names": [
+                "LSP-aleo-developer"
+            ],
             "author": "aleohq",
             "homepage": "https://developer.aleo.org/overview/",
             "issues": "https://github.com/AleoHQ/leo-plugins/issues",
@@ -493,8 +567,9 @@
             ]
         },
         {
-            "details": "https://github.com/LDAP/LSP-ltex-ls",
+            "details": "https://github.com/sublimelsp/LSP-ltex-ls",
             "name": "LSP-ltex-ls",
+            "author": "LDAP",
             "releases": [
                 {
                     "sublime_text": ">=4070",
@@ -534,7 +609,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": "3092 - 3999",
+                    "sublime_text": "3154 - 3999",
                     "tags": "st3-"
                 },
                 {
@@ -599,7 +674,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -626,7 +701,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 4147",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4148",
                     "tags": true
                 }
             ]
@@ -637,6 +716,27 @@
             "releases": [
                 {
                     "sublime_text": ">=4070",
+                    "tags": true
+                }
+            ]
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-rome",
+            "name": "LSP-rome",
+            "releases": [
+                {
+                    "sublime_text": ">=4070",
+                    "tags": true
+                }
+            ]
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-ruff",
+            "name": "LSP-ruff",
+            "author": "LDAP",
+            "releases": [
+                {
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -670,7 +770,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": "3092 - 3999",
+                    "sublime_text": "3154 - 3999",
                     "tags": true
                 }
             ]
@@ -697,7 +797,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -731,7 +831,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -745,7 +845,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -799,7 +899,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": "3092 - 3999",
+                    "sublime_text": "3154 - 3999",
                     "tags": "st3-"
                 },
                 {
@@ -825,6 +925,23 @@
             ]
         },
         {
+            "details": "https://github.com/martinbarez/LSP-VHDL-ls",
+            "name": "LSP-VHDL-ls",
+            "labels": [
+                "VHDL"
+            ],
+            "releases": [
+                {
+                    "sublime_text": ">=4070",
+                    "platforms": [
+                        "windows",
+                        "linux"
+                    ],
+                    "tags": true
+                }
+            ]
+        },
+        {
             "details": "https://github.com/sublimelsp/LSP-volar",
             "name": "LSP-volar",
             "labels": [
@@ -836,7 +953,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": "3154 - 4147",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4148",
                     "tags": true
                 }
             ]
@@ -853,7 +974,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": ">=3154",
                     "tags": true
                 }
             ]
@@ -870,12 +991,15 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3092",
+                    "sublime_text": "3154 - 4147",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4148",
                     "tags": true
                 }
             ]
         },
-
         // end of repository.json
         // bellow are packages that are not in repository.json
         {
@@ -887,40 +1011,8 @@
             "name": "LSP-cmake"
         },
         {
-            "details": "https://github.com/sublimelsp/LSP-kotlin",
-            "name": "LSP-kotlin"
-        },
-        {
             "details": "https://github.com/sublimelsp/LSP-SonarLint",
             "name": "LSP-SonarLint"
-        },
-        {
-            "details": "https://github.com/sublimelsp/LSP-cspell",
-            "name": "LSP-cspell"
-        },
-        {
-            "details": "https://github.com/sublimelsp/LSP-rome",
-            "name": "LSP-rome"
-        },
-        {
-            "details": "https://github.com/sublimelsp/LSP-ruff",
-            "name": "LSP-ruff"
-        },
-        {
-            "details": "https://github.com/sublimelsp/LSP-biome",
-            "name": "LSP-biome"
-        },
-        {
-            "details": "https://github.com/gno-playground/LSP-gnols",
-            "name": "LSP-gnols"
-        },
-        {
-            "details": "https://github.com/martinbarez/LSP-VHDL-ls",
-            "name": "LSP-VHDL-ls"
-        },
-        {
-            "details": "https://github.com/errata-ai/LSP-vale-ls",
-            "name": "LSP-vale-ls"
         },
         // libs
         {
