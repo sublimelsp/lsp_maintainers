@@ -1,7 +1,5 @@
 {
-    // packages is copied from https://github.com/sublimelsp/repository/blob/main/repository.json
     "packages": [
-        // start of repository.json
         {
             "details": "https://github.com/cameroncooper/sublime-chialisp",
             "name": "Chialisp",
@@ -1000,8 +998,7 @@
                 }
             ]
         },
-        // end of repository.json
-        // bellow are packages that are not in repository.json
+
         {
             "details": "https://github.com/sublimelsp/LSP-anakin",
             "name": "LSP-anakin"
@@ -1014,7 +1011,7 @@
             "details": "https://github.com/sublimelsp/LSP-SonarLint",
             "name": "LSP-SonarLint"
         },
-        // libs
+
         {
             "details": "https://github.com/sublimelsp/lsp_utils",
             "name": "lsp_utils"
