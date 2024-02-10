@@ -80,7 +80,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -113,7 +117,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -263,7 +271,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -280,7 +292,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -297,7 +313,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -397,7 +417,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -435,7 +459,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -539,9 +567,7 @@
         {
             "details": "https://github.com/sublimelsp/LSP-leo",
             "name": "LSP-leo",
-            "previous_names": [
-                "LSP-aleo-developer"
-            ],
+            "previous_names": ["LSP-aleo-developer"],
             "author": "aleohq",
             "homepage": "https://developer.aleo.org/overview/",
             "issues": "https://github.com/AleoHQ/leo-plugins/issues",
@@ -672,7 +698,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 4069",
                     "tags": true
                 }
             ]
@@ -682,7 +708,11 @@
             "name": "LSP-pylsp",
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -734,7 +764,11 @@
             "author": "LDAP",
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -795,7 +829,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -812,7 +850,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -829,7 +871,7 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 4069",
                     "tags": true
                 }
             ]
@@ -843,7 +885,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
@@ -925,9 +971,7 @@
         {
             "details": "https://github.com/martinbarez/LSP-VHDL-ls",
             "name": "LSP-VHDL-ls",
-            "labels": [
-                "VHDL"
-            ],
+            "labels": ["VHDL"],
             "releases": [
                 {
                     "sublime_text": ">=4070",
@@ -972,7 +1016,11 @@
             ],
             "releases": [
                 {
-                    "sublime_text": ">=3154",
+                    "sublime_text": "3154 - 3999",
+                    "tags": "st3-"
+                },
+                {
+                    "sublime_text": ">=4000",
                     "tags": true
                 }
             ]
