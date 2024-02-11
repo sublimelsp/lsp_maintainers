@@ -76,6 +76,7 @@ Commands:
 | LSP-volar     | 3154 - 4147(st3-), >=4148   |
 | LSP-vue     | 3154 - 3999(st3-), >=4000   |
 | LSP-yaml     | 3154 - 4147(st3-), >=4148   |
+| WolframLanguage (<a href='https://github.com/WolframResearch/Sublime-WolframLanguage'>WolframResearch</a>)     | >=3103   |
 | LSP-anakin     |    |
 | LSP-cmake     |    |
 | LSP-SonarLint     |    |
