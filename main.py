@@ -45,10 +45,55 @@ class OpenLspProjectsCommand(sublime_plugin.WindowCommand):
             'folders': folders
         })
 
-def run_command(cmd):
+
+def run_command(cmd, cwd=None):
     p = subprocess.Popen(cmd,
+                         cwd=cwd,
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     output, _stderr = p.communicate()
     return output.decode('utf-8')
+
+
+class LspTry38Command(sublime_plugin.WindowCommand):
+    def run(self):
+        t = threading.Thread(target=setup_38, args=(self.window,))
+        t.start()
+
+class LspTry33Command(sublime_plugin.WindowCommand):
+    def run(self):
+        t = threading.Thread(target=setup_33, args=(self.window,))
+        t.start()
+
+
+def setup_38(window: sublime.Window):
+    packages_path = sublime.packages_path()
+    packages = sublime.load_settings(
+        "lsp_maintainers.sublime-settings").get('packages')
+
+    for package in packages:
+        cwd = os.path.join(packages_path, package['name'])
+        print(run_command(['git', 'checkout', 'feat/py38'], cwd))
+
+    sublime.message_dialog('Done')
+
+
+def setup_33(window: sublime.Window):
+    packages_path = sublime.packages_path()
+    packages = sublime.load_settings(
+        "lsp_maintainers.sublime-settings").get('packages')
+
+    for package in packages:
+        cwd = os.path.join(packages_path, package['name'])
+        try:
+            print(run_command(['git', 'checkout', 'master'], cwd))
+        except:
+            print("skip")
+
+        try:
+            print(run_command(['git', 'checkout', 'main'], cwd))
+        except:
+            print("skip")
+
+    sublime.message_dialog('Done')

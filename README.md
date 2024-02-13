@@ -13,6 +13,9 @@ Commands:
 
 `LSP Maintainers: Open Projects` - will open the those LSP-* plugins in the current window.
 
+`LSP Maintainers: Switch to Python 3.8` - will switch the branch to `feat/py38` in all LSP-* pacakges.
+
+`LSP Maintainers: Switch to Python 3.3` - will switch the branch to `main` (or `master`) in all LSP-* pacakges.
 
 
 | Package name (maintainer) | Releases(tags) |
