@@ -55,7 +55,6 @@ async function main() {
 
     await page.type('#release_name', lspPackage.proposed_tag);
 
-    await page.type("#release_body", "### Breaking change\n\nSwitch to python 3.8.\n\n>[!WARNING]\nPlease restart Sublime Text after the update.");
     // TODO_2 remove this
     return
 
