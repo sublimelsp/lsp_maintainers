@@ -1,3 +1,4 @@
+# run `python ./generate-table.py`
 import json
 import re
 table = """
