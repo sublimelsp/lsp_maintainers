@@ -1,11 +1,5 @@
 [
 	{
-		"name": "LSP",
-		"current_tag": "4070-1.29.0",
-		"proposed_tag": "4070-2.0.0",
-		"pr": "https://github.com/sublimelsp/LSP/pull/2418"
-	},
-	{
 		"name": "LSP-angular",
 		"current_tag": "v2.2.0",
 		"proposed_tag": "v3.0.0",
