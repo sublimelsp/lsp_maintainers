@@ -1096,6 +1096,10 @@
         {
             "details": "https://github.com/sublimelsp/repository",
             "name": "repository"
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-basedpyright",
+            "name": "LSP-basedpyright"
         }
     ]
 }
