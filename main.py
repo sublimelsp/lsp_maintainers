@@ -97,3 +97,20 @@ def setup_33(window: sublime.Window):
             print("skip")
 
     sublime.message_dialog('Done')
+
+def print_tags(window: sublime.Window):
+    packages_path = sublime.packages_path()
+    packages = sublime.load_settings(
+        "lsp_maintainers.sublime-settings").get('packages')
+
+    for package in packages:
+        if 'LSP' not in package['name']:
+            continue
+        latest_release = sublime.decode_value(run_command(['gh', 'api', '/repos/sublimelsp/'+ package['name']+ '/releases/latest']))
+        if 'tag_name' in latest_release:
+            print(package['name'], latest_release['tag_name'])
+        else:
+            print(package['name'], '/')
+
+    sublime.message_dialog('Done')
+
