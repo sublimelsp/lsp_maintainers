@@ -54,6 +54,7 @@ async function main() {
     await page.click('#tag-list .SelectMenu-item') // click create tag
 
     await page.type('#release_name', lspPackage.proposed_tag);
+    await page.type("#release_body", "Switch to Python 3.8.");
 
     // TODO_2 remove this
     return
