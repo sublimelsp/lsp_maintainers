@@ -186,6 +186,12 @@
 		"pr": "https://github.com/sublimelsp/LSP-marksman/pull/23"
 	},
 	{
+		"name": "LSP-nimlangserver",
+		"current_tag": "1.0.0",
+		"proposed_tag": "1.1.0",
+		"pr": "https://github.com/sublimelsp/LSP-nimlangserver/pull/1"
+	},
+	{
 		"name": "LSP-OmniSharp",
 		"current_tag": "v1.0.11",
 		"proposed_tag": "v1.1.0",
