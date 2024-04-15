@@ -19,7 +19,7 @@
 	},
 	{
 		"name": "LSP-basedpyright",
-		"current_tag": "1.0.4",
+		"current_tag": "1.0.5",
 		"proposed_tag": "1.1.0",
 		"pr": "https://github.com/sublimelsp/LSP-basedpyright/pull/1"
 	},
