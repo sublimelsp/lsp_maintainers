@@ -1103,6 +1103,10 @@
         {
             "details": "https://github.com/sublimelsp/LSP-basedpyright",
             "name": "LSP-basedpyright"
+        },
+        {
+            "details": "https://github.com/LetsZiggy/LSP-aurelia",
+            "name": "LSP-aurelia"
         }
     ]
 }
