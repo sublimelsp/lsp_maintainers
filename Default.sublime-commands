@@ -13,14 +13,5 @@
     {
         "caption": "LSP Maintainers: Open Projects",
         "command": "open_lsp_projects"
-    },
-    {
-        "caption": "LSP Maintainers: Switch to Python 3.8",
-        "command": "lsp_try38"
-    },
-    {
-        "caption": "LSP Maintainers: Switch to Python 3.3",
-        "command": "lsp_try33"
     }
-
 ]
