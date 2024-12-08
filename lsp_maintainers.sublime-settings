@@ -739,6 +739,21 @@
             ]
         },
         {
+            "details": "https://github.com/PythonVoiceCodingPlugin/LSP-pyvoice",
+            "name": "LSP-pyvoice",
+            "author": "mpourmpoulis",
+            "labels": [
+                "voice coding",
+                "accessibility"
+            ],
+            "releases": [
+                {
+                    "sublime_text": ">=4070",
+                    "tags": true
+                }
+            ]
+        },
+        {
             "details": "https://github.com/sublimelsp/LSP-R",
             "name": "LSP-R",
             "releases": [
@@ -803,6 +818,23 @@
             "releases": [
                 {
                     "sublime_text": "3154 - 3999",
+                    "tags": true
+                }
+            ]
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-some-sass",
+            "name": "LSP-some-sass",
+            "labels": [
+                "auto-complete",
+                "linting",
+                "formatting",
+                "code navigation",
+                "intellisense"
+            ],
+            "releases": [
+                {
+                    "sublime_text": ">=4169",
                     "tags": true
                 }
             ]
@@ -948,6 +980,23 @@
                 },
                 {
                     "sublime_text": ">=4000",
+                    "tags": true
+                }
+            ]
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-twiggy",
+            "name": "LSP-twiggy",
+            "labels": [
+                "auto-complete",
+                "linting",
+                "formatting",
+                "code navigation",
+                "intellisense"
+            ],
+            "releases": [
+                {
+                    "sublime_text": ">=4169",
                     "tags": true
                 }
             ]
