@@ -1156,6 +1156,10 @@
         {
             "details": "https://github.com/LetsZiggy/LSP-aurelia",
             "name": "LSP-aurelia"
+        },
+        {
+            "details": "https://github.com/sublimelsp/LSP-Tinymist",
+            "name": "LSP-Tinymist"
         }
     ]
 }
