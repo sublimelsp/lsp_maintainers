@@ -12,7 +12,7 @@ with open('../lsp_maintainers.sublime-settings') as user_file:
 	file_contents = user_file.read()
 	settings = json.loads(file_contents)
 
-	for p in settings["packages"]:
+	for p in sorted(settings["packages"], key=lambda item: item['name']):
 		href = str(p["details"])
 		name = p["name"]
 		maintainer = re.sub(r"\/.+", "", href.replace("https://github.com/", ""))
