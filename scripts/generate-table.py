@@ -1,6 +1,9 @@
+#!/usr/bin/env python3
+
 # run `python ./generate-table.py`
 import json
 import re
+
 table = """
 | Package name (maintainer) | Releases(tags) |
 |---------------------------|----------|
@@ -14,7 +17,7 @@ with open('../lsp_maintainers.sublime-settings') as user_file:
 		name = p["name"]
 		maintainer = re.sub(r"\/.+", "", href.replace("https://github.com/", ""))
 		if maintainer != "sublimelsp":
-			name += f" (<a href='{href}'>{maintainer}</a>)"
+			name += f" ([{maintainer}]({href}))"
 
 		def format_release(release):
 			text = release['sublime_text']
