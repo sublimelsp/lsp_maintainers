@@ -1,8 +1,15 @@
+from __future__ import annotations
+
 import os
-import sublime
-import sublime_plugin
 import subprocess
 import threading
+
+import sublime
+import sublime_plugin
+
+from .scripts.utils import get_all_packages
+
+ST_VERSION = int(sublime.version())
 
 
 class CloneLspProjectsCommand(sublime_plugin.WindowCommand):
@@ -13,17 +20,15 @@ class CloneLspProjectsCommand(sublime_plugin.WindowCommand):
 def clone(window: sublime.Window):
     packages_path = sublime.packages_path()
     variables = window.extract_variables()
-    packages = sublime.load_settings("lsp_maintainers.sublime-settings").get('packages')
 
-    for package in packages:
+    for package in get_all_packages(ST_VERSION):
         already_exist = os.path.exists(os.path.join(packages_path, package['name']))
         if already_exist:
             print('Project {} already exist'.format(package['name']))
             continue
         ssh_repo_link = package['details'].replace("https://github.com/", "git@github.com:") + ".git"
-        setup_command = "git clone {} ${{packages}}/{}".format(ssh_repo_link, package['name'])
-        cmd = setup_command.split(" ")
-        cmd = sublime.expand_variables(cmd, variables)
+        setup_command = ["git", "clone", ssh_repo_link, f"${{packages}}/{package['name']}"]
+        cmd = sublime.expand_variables(setup_command, variables)
         print('Running setup command for {}:\n{}'.format(package['name'], cmd))
         window.status_message('Setting up {}.'.format(package['name']))
         run_command(cmd)
@@ -36,9 +41,8 @@ class OpenLspProjectsCommand(sublime_plugin.WindowCommand):
         packages_path = sublime.packages_path()
         project_data = self.window.project_data() or {}
         folders = project_data.get('folders') or []
-        packages = sublime.load_settings("lsp_maintainers.sublime-settings").get('packages')
 
-        for package in packages:
+        for package in get_all_packages(ST_VERSION):
             package_path = os.path.join(packages_path, package['name'])
             folders.append({"path": package_path})
         self.window.set_project_data({
