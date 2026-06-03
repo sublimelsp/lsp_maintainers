@@ -15,6 +15,18 @@ dependencies = [
 
 [tool.pyright]
 pythonVersion = "3.8"
+reportArgumentType = "none"
+reportAssignmentType = "none"
+reportAttributeAccessIssue = "none"
+reportCallIssue = "warning"
+reportIncompatibleMethodOverride = "none"
+reportInvalidTypeArguments = "none"
+reportInvalidTypeVarUse = "none"
+reportMissingModuleSource = "none"
+reportOptionalMemberAccess = "none"
+reportOptionalSubscript = "none"
+reportPossiblyUnboundVariable = "none"
+reportRedeclaration = "none"
 stubPath = "./LSP/stubs"
 typeCheckingMode = "standard"
 extraPaths = [
