@@ -9,6 +9,7 @@ import urllib.parse
 import urllib.request
 import zipfile
 from pathlib import Path
+from typing import Literal, overload
 
 from utils import get_all_packages
 
@@ -36,14 +37,25 @@ def download_st4(target_dir: Path) -> int:
         raise RuntimeError('Failed to found link to the latest version of Sublime Text')
 
 
-def run_subprocess(args: 'list[str]', *, cwd: Path) -> None:
-    subprocess.run(args, check=True, cwd=cwd)  # noqa: S607
+@overload
+def run_subprocess(args: 'list[str]', *, cwd: Path, check: Literal[False]) -> subprocess.CompletedProcess[bytes]: ...
+@overload
+def run_subprocess(args: 'list[str]', *, cwd: Path) -> None: ...
+def run_subprocess(args: 'list[str]', *, cwd: Path, check: Literal[False] | None = None) -> subprocess.CompletedProcess[bytes] | None:
+    check_final = True if check is None else False
+    return subprocess.run(args, check=check_final, cwd=cwd)  # noqa: S607
 
 
-def clone_repository(repo_url: str, name: str, *, target_dir: Path) -> None:
+def clone_repository(repo_url: str, name: str, *, target_dir: Path, branch: str | None = None) -> None:
     print(f'Cloning {name}...')
     package_dir = target_dir / name
     if not package_dir.is_dir():
+        if branch is not None:
+            result = run_subprocess(["git", "clone", "--depth=1", "--branch", branch, repo_url, name], cwd=target_dir, check=False)
+            if result.returncode == 0:
+                print(f'Cloned branch {branch!r} for {name}')
+                return
+            print(f'Branch {branch!r} not found in {name}, falling back to default branch')
         run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
     else:
         run_subprocess(['git', 'reset', '--hard'], cwd=package_dir)
@@ -60,6 +72,13 @@ def parse_args() -> argparse.Namespace:
         action="append",
         default=[],
         help="Package name to skip. Can be repeated (e.g. --exclude LSP-typescript --exclude LSP-eslint).",
+    )
+    parser.add_argument(
+        "--preferred-branch",
+        metavar="BRANCH",
+        default=None,
+        dest="branch",
+        help="Branch to check out in every repository after cloning. Falls back to the default branch if not found.",
     )
     return parser.parse_args()
 
@@ -79,14 +98,14 @@ def main():
                 print(f"Skipping {package_name} (excluded)")
                 continue
             repo_url: str = p["details"]
-            clone_repository(repo_url, package_name, target_dir=repositories_dir)
+            clone_repository(repo_url, package_name, target_dir=repositories_dir, branch=args.branch)
 
         if 'lsp_utils' not in excluded:
-            clone_repository('https://github.com/sublimelsp/lsp_utils.git', 'lsp_utils', target_dir=repositories_dir)
+            clone_repository('https://github.com/sublimelsp/lsp_utils.git', 'lsp_utils', target_dir=repositories_dir, branch=args.branch)
         if 'sublime_aio' not in excluded:
-            clone_repository('https://github.com/packagecontrol/sublime_aio.git', 'sublime_aio', target_dir=repositories_dir)
+            clone_repository('https://github.com/packagecontrol/sublime_aio.git', 'sublime_aio', target_dir=repositories_dir, branch=args.branch)
         if 'sublime_lib' not in excluded:
-            clone_repository('https://github.com/SublimeText/sublime_lib.git', 'sublime_lib', target_dir=repositories_dir)
+            clone_repository('https://github.com/SublimeText/sublime_lib.git', 'sublime_lib', target_dir=repositories_dir, branch=args.branch)
             run_subprocess(['rm', '-rf', 'sublime_lib/stubs'], cwd=repositories_dir)
     except KeyboardInterrupt:
         pass
