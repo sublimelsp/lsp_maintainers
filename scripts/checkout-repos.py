@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import argparse
 import re
+import shutil
 import subprocess
+import tarfile
+import tempfile
 import urllib.parse
 import urllib.request
 import zipfile
@@ -46,20 +49,44 @@ def run_subprocess(args: 'list[str]', *, cwd: Path, check: Literal[False] | None
     return subprocess.run(args, check=check_final, cwd=cwd)  # noqa: S607
 
 
+def apply_git_archive(name: str, *, target_dir: Path) -> None:
+    """Replace the cloned directory contents with a git archive export.
+
+    This filters out anything marked as export-ignore in .gitattributes and
+    removes the .git directory, leaving a clean export in place.
+    """
+    package_dir = target_dir / name
+    with tempfile.NamedTemporaryFile(suffix='.tar', delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+    try:
+        run_subprocess(['git', 'archive', '--output', str(tmp_path), 'HEAD'], cwd=package_dir)
+        shutil.rmtree(package_dir)
+        package_dir.mkdir()
+        with tarfile.open(tmp_path) as tar:
+            tar.extractall(package_dir)
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+
 def clone_repository(repo_url: str, name: str, *, target_dir: Path, branch: str | None = None) -> None:
     print(f'Cloning {name}...')
     package_dir = target_dir / name
-    if not package_dir.is_dir():
-        if branch is not None:
-            result = run_subprocess(["git", "clone", "--depth=1", "--branch", branch, repo_url, name], cwd=target_dir, check=False)
-            if result.returncode == 0:
-                print(f'Cloned branch {branch!r} for {name}')
-                return
+    if package_dir.is_dir():
+        shutil.rmtree(package_dir)
+    if branch is not None:
+        result = run_subprocess(["git", "clone", "--depth=1", "--branch", branch, repo_url, name], cwd=target_dir, check=False)
+        if result.returncode == 0:
+            print(f'Cloned branch {branch!r} for {name}')
+        else:
             print(f'Branch {branch!r} not found in {name}, falling back to default branch')
-        run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
+            run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
     else:
-        run_subprocess(['git', 'reset', '--hard'], cwd=package_dir)
-        run_subprocess(['git', 'pull'], cwd=package_dir)
+        run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
+    if name == 'LSP':
+        stubs_dir = package_dir / 'stubs'
+        if stubs_dir.is_dir():
+            shutil.move(str(stubs_dir), target_dir / 'stubs')
+    apply_git_archive(name, target_dir=target_dir)
 
 
 def parse_args() -> argparse.Namespace:
@@ -105,8 +132,16 @@ def main():
         if 'sublime_aio' not in excluded:
             clone_repository('https://github.com/packagecontrol/sublime_aio.git', 'sublime_aio', target_dir=repositories_dir, branch=args.branch)
         if 'sublime_lib' not in excluded:
-            clone_repository('https://github.com/SublimeText/sublime_lib.git', 'sublime_lib', target_dir=repositories_dir, branch=args.branch)
-            run_subprocess(['rm', '-rf', 'sublime_lib/stubs'], cwd=repositories_dir)
+            sublime_lib_path = (repositories_dir / 'sublime_lib')
+            if sublime_lib_path.is_dir():
+                shutil.rmtree(sublime_lib_path)
+            sublime_lib_path = (repositories_dir / 'sublime_lib')
+            if sublime_lib_path.is_dir():
+                shutil.rmtree(sublime_lib_path)
+            cloned_directory_name = "sublime_lib_temp"
+            clone_repository('https://github.com/SublimeText/sublime_lib.git', cloned_directory_name, target_dir=repositories_dir, branch=args.branch)
+            shutil.move(str(repositories_dir / cloned_directory_name / 'sublime_lib'), str(repositories_dir))
+            shutil.rmtree(repositories_dir / cloned_directory_name)
     except KeyboardInterrupt:
         pass
 
