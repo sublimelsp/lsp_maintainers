@@ -8,29 +8,16 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "basedpyright>=1.39.6",
     "orjson==3.10.15",
+    "pyright>=1.1.410",
     "typing-extensions==4.13.2",
 ]
 
 [tool.pyright]
 pythonVersion = "3.8"
-reportArgumentType = "none"
-reportAssignmentType = "none"
-reportAttributeAccessIssue = "none"
-reportCallIssue = "warning"
-reportIncompatibleMethodOverride = "none"
-reportInvalidTypeArguments = "none"
-reportInvalidTypeVarUse = "none"
-reportMissingModuleSource = "none"
-reportOptionalMemberAccess = "none"
-reportOptionalSubscript = "none"
-reportPossiblyUnboundVariable = "none"
-reportRedeclaration = "none"
 stubPath = "./LSP/stubs"
 typeCheckingMode = "standard"
 extraPaths = [
-    ".venv/lib/python3.8/site-packages/",
     "Sublime Text.app/Contents/MacOS/Lib/python38/",
     "lsp_utils/",
     "sublime-aio/src",
