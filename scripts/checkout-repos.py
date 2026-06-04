@@ -135,9 +135,6 @@ def main():
             sublime_lib_path = (repositories_dir / 'sublime_lib')
             if sublime_lib_path.is_dir():
                 shutil.rmtree(sublime_lib_path)
-            sublime_lib_path = (repositories_dir / 'sublime_lib')
-            if sublime_lib_path.is_dir():
-                shutil.rmtree(sublime_lib_path)
             cloned_directory_name = "sublime_lib_temp"
             clone_repository('https://github.com/SublimeText/sublime_lib.git', cloned_directory_name, target_dir=repositories_dir, branch=args.branch)
             shutil.move(str(repositories_dir / cloned_directory_name / 'sublime_lib'), str(repositories_dir))
