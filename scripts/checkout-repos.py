@@ -132,11 +132,11 @@ def main():
         if 'sublime_aio' not in excluded:
             clone_repository('https://github.com/packagecontrol/sublime_aio.git', 'sublime_aio', target_dir=repositories_dir, branch=args.branch)
         if 'sublime_lib' not in excluded:
+            cloned_directory_name = "sublime_lib_temp"
+            clone_repository('https://github.com/SublimeText/sublime_lib.git', cloned_directory_name, target_dir=repositories_dir, branch=args.branch)
             sublime_lib_path = (repositories_dir / 'sublime_lib')
             if sublime_lib_path.is_dir():
                 shutil.rmtree(sublime_lib_path)
-            cloned_directory_name = "sublime_lib_temp"
-            clone_repository('https://github.com/SublimeText/sublime_lib.git', cloned_directory_name, target_dir=repositories_dir, branch=args.branch)
             shutil.move(str(repositories_dir / cloned_directory_name / 'sublime_lib'), str(repositories_dir))
             shutil.rmtree(repositories_dir / cloned_directory_name)
     except KeyboardInterrupt:
