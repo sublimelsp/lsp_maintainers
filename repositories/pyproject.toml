@@ -20,7 +20,6 @@ dependencies = [
 pythonVersion = "3.8"
 reportArgumentType = "none"
 reportAssignmentType = "none"
-reportAttributeAccessIssue = "none"
 reportCallIssue = "warning"
 reportIncompatibleMethodOverride = "none"
 reportInvalidTypeArguments = "none"
