@@ -85,7 +85,10 @@ def clone_repository(repo_url: str, name: str, *, target_dir: Path, branch: str 
     if name == 'LSP':
         stubs_dir = package_dir / 'stubs'
         if stubs_dir.is_dir():
-            shutil.move(str(stubs_dir), target_dir / 'stubs')
+            target_stubs_dir = target_dir / 'stubs'
+            if target_stubs_dir.is_dir():
+                shutil.rmtree(target_stubs_dir)
+            shutil.move(str(stubs_dir), target_stubs_dir)
     apply_git_archive(name, target_dir=target_dir)
 
 
