@@ -18,12 +18,10 @@ dependencies = [
 
 [tool.pyright]
 pythonVersion = "3.8"
-reportArgumentType = "none"
-reportAssignmentType = "none"
+typeCheckingMode = "standard"
 reportIncompatibleMethodOverride = "none"
 reportMissingModuleSource = "none"
 stubPath = "./stubs"
-typeCheckingMode = "standard"
 extraPaths = [
     "Sublime Text.app/Contents/MacOS/Lib/python38/",
     "lsp_utils/",
