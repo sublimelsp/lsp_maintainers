@@ -22,7 +22,6 @@ reportArgumentType = "none"
 reportAssignmentType = "none"
 reportIncompatibleMethodOverride = "none"
 reportMissingModuleSource = "none"
-reportRedeclaration = "none"
 stubPath = "./stubs"
 typeCheckingMode = "standard"
 extraPaths = [
