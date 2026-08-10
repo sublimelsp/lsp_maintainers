@@ -11,9 +11,11 @@ import tempfile
 import urllib.parse
 import urllib.request
 import zipfile
+from collections.abc import Generator
 from pathlib import Path
 from typing import Literal, overload
 
+from package_version import PackageVersion, version_match_prefix
 from utils import get_all_packages
 
 ST4_WEB_URL = 'https://www.sublimetext.com/download_thanks'
@@ -41,12 +43,12 @@ def download_st4(target_dir: Path) -> int:
 
 
 @overload
-def run_subprocess(args: 'list[str]', *, cwd: Path, check: Literal[False]) -> subprocess.CompletedProcess[bytes]: ...
+def run_subprocess(args: list[str], *, cwd: Path, check: Literal[False]) -> subprocess.CompletedProcess[bytes]: ...
 @overload
-def run_subprocess(args: 'list[str]', *, cwd: Path) -> None: ...
-def run_subprocess(args: 'list[str]', *, cwd: Path, check: Literal[False] | None = None) -> subprocess.CompletedProcess[bytes] | None:
-    check_final = True if check is None else False
-    return subprocess.run(args, check=check_final, cwd=cwd)  # noqa: S607
+def run_subprocess(args: list[str], *, cwd: Path) -> None: ...
+def run_subprocess(args: list[str], *, cwd: Path, check: Literal[False] | None = None) -> subprocess.CompletedProcess[bytes] | None:
+    check_final = check is None
+    return subprocess.run(args, check=check_final, cwd=cwd)
 
 
 def apply_git_archive(name: str, *, target_dir: Path) -> None:
@@ -68,20 +70,22 @@ def apply_git_archive(name: str, *, target_dir: Path) -> None:
         tmp_path.unlink(missing_ok=True)
 
 
-def clone_repository(repo_url: str, name: str, *, target_dir: Path, branch: str | None = None) -> None:
+def clone_repository(repo_url: str, name: str, tag_prefix: str | None, *, target_dir: Path, branch_override: str | None = None) -> None:
+    tags = fetch_remote_tags(repo_url)
+    latest_release = next(get_sorted_releases(tags, tag_prefix), None)
     print(f'Cloning {name}...')
     package_dir = target_dir / name
     if package_dir.is_dir():
         shutil.rmtree(package_dir)
-    if branch is not None:
-        result = run_subprocess(["git", "clone", "--depth=1", "--branch", branch, repo_url, name], cwd=target_dir, check=False)
+    if branch_override is not None:
+        result = run_subprocess(["git", "clone", "--depth=1", "--branch", branch_override, repo_url, name], cwd=target_dir, check=False)
         if result.returncode == 0:
-            print(f'Cloned branch {branch!r} for {name}')
+            print(f'Cloned branch {branch_override!r} for {name}')
         else:
-            print(f'Branch {branch!r} not found in {name}, falling back to default branch')
-            run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
+            print(f'Branch {branch_override!r} not found in {name}, falling back to latest release')
+            clone_release_or_default(repo_url, name, latest_release, target_dir=target_dir)
     else:
-        run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
+        clone_release_or_default(repo_url, name, latest_release, target_dir=target_dir)
     if name == 'LSP':
         stubs_dir = package_dir / 'stubs'
         if stubs_dir.is_dir():
@@ -90,6 +94,37 @@ def clone_repository(repo_url: str, name: str, *, target_dir: Path, branch: str 
                 shutil.rmtree(target_stubs_dir)
             shutil.move(str(stubs_dir), target_stubs_dir)
     apply_git_archive(name, target_dir=target_dir)
+
+
+def fetch_remote_tags(repo_url: str) -> list[str]:
+    """Return all tag names of the remote repository without cloning it."""
+    result = subprocess.run(
+        ['git', 'ls-remote', '--tags', '--refs', repo_url],
+        check=True, capture_output=True, text=True,
+    )
+    # Each line looks like: "<sha>\trefs/tags/<name>". --refs drops the peeled "^{}" entries.
+    return [line.split('refs/tags/', 1)[1] for line in result.stdout.splitlines() if 'refs/tags/' in line]
+
+
+def get_sorted_releases(tags: list[str], tag_prefix: str | None) -> Generator[tuple[PackageVersion, str]]:
+    used_versions = set()
+    releases: list[tuple[PackageVersion, str]] = []
+    for tag in tags:
+        version = version_match_prefix(tag, tag_prefix)
+        if version and version not in used_versions:
+            used_versions.add(version)
+            releases.append((version, tag))
+    yield from sorted(releases, key=lambda r: r[0], reverse=True)
+
+def clone_release_or_default(repo_url: str, name: str, latest_release: tuple[PackageVersion, str] | None, *, target_dir: Path) -> None:
+    """Clone the latest release tag, or the default branch when there are no releases."""
+    if latest_release:
+        tag = latest_release[1]
+        run_subprocess(["git", "clone", "--depth=1", "--branch", tag, repo_url, name], cwd=target_dir)
+        print(f'Cloned tag {tag!r} for {name}')
+    else:
+        print(f'No releases found for {name}, falling back to default branch')
+        run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
 
 
 def parse_args() -> argparse.Namespace:
@@ -128,15 +163,17 @@ def main():
                 print(f"Skipping {package_name} (excluded)")
                 continue
             repo_url: str = p["details"]
-            clone_repository(repo_url, package_name, target_dir=repositories_dir, branch=args.branch)
+            tag_prefix = p["tag_prefix"]
+            clone_repository(repo_url, package_name, tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
 
+        tag_prefix = None
         if 'lsp_utils' not in excluded:
-            clone_repository('https://github.com/sublimelsp/lsp_utils.git', 'lsp_utils', target_dir=repositories_dir, branch=args.branch)
+            clone_repository('https://github.com/sublimelsp/lsp_utils.git', 'lsp_utils', tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
         if 'sublime_aio' not in excluded:
-            clone_repository('https://github.com/packagecontrol/sublime_aio.git', 'sublime_aio', target_dir=repositories_dir, branch=args.branch)
+            clone_repository('https://github.com/packagecontrol/sublime_aio.git', 'sublime_aio', tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
         if 'sublime_lib' not in excluded:
             cloned_directory_name = "sublime_lib_temp"
-            clone_repository('https://github.com/SublimeText/sublime_lib.git', cloned_directory_name, target_dir=repositories_dir, branch=args.branch)
+            clone_repository('https://github.com/SublimeText/sublime_lib.git', cloned_directory_name, tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
             sublime_lib_path = (repositories_dir / 'sublime_lib')
             if sublime_lib_path.is_dir():
                 shutil.rmtree(sublime_lib_path)
