@@ -15,6 +15,7 @@ from collections.abc import Generator
 from pathlib import Path
 from typing import Literal, overload
 
+from dependencies import collect_dependencies
 from package_version import PackageVersion, version_match_prefix
 from utils import get_all_packages
 
@@ -145,6 +146,12 @@ def parse_args() -> argparse.Namespace:
         dest="branch",
         help="Branch to check out in every repository after cloning. Falls back to the default branch if not found.",
     )
+    parser.add_argument(
+        "--no-collect-dependencies",
+        action="store_true",
+        help="Do not collect the dependencies of the packages into repositories/requirements-packages.txt. Use this "
+        "option if you replace packages after the checkout, and then run collect-dependencies.py.",
+    )
     return parser.parse_args()
 
 
@@ -179,6 +186,9 @@ def main():
                 shutil.rmtree(sublime_lib_path)
             shutil.move(str(repositories_dir / cloned_directory_name / 'sublime_lib'), str(repositories_dir))
             shutil.rmtree(repositories_dir / cloned_directory_name)
+
+        if not args.no_collect_dependencies:
+            collect_dependencies(st_version)
     except KeyboardInterrupt:
         pass
 

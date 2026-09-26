@@ -23,17 +23,30 @@ deletes and clones each package again on every run.
 python3 scripts/checkout-repos.py
 ```
 
+After cloning, the script collects the libraries that the packages depend on. It reads the `dependencies.json` file of
+each package in `repositories` and writes the libraries to `repositories/requirements-packages.txt`. It pins each
+library to the version that Package Control provides for the Python version of the type check
+(`tool.pyright.pythonVersion` in `repositories/pyproject.toml`). It does not write libraries that are checked out from
+source (for example `lsp_utils`) or that have stubs in `repositories/stubs`.
+
 Options:
 
 - `--exclude NAME` - do not clone the package `NAME`. You can use this option more than one time.
 - `--preferred-branch BRANCH` - clone the branch `BRANCH` of each package. If a package does not have that branch, the
   script clones its latest release.
+- `--no-collect-dependencies` - do not collect the libraries. Use this option if you add or replace packages in
+  `repositories` after the checkout. Then collect the libraries after that change:
+
+  ```sh
+  python3 scripts/collect-dependencies.py
+  ```
 
 Then type-check all packages:
 
 ```sh
 cd repositories
 uv sync
+uv pip install -r requirements-packages.txt
 uv run basedpyright
 ```
 
