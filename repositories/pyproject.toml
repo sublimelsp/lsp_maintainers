@@ -13,7 +13,7 @@ dependencies = [
     "more-itertools==10.5.0",
     "orjson==3.10.15",
     "typing-extensions==4.13.2",
-    "watchdog==4.0.2",
+    "watchfiles==0.24.0",
 ]
 
 [tool.pyright]
