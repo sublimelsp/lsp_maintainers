@@ -13,6 +13,30 @@ Commands:
 
 `LSP Maintainers: Open Projects` - will open the those LSP-* plugins in the current window.
 
+## Type-check all packages
+
+The `scripts/checkout-repos.py` script downloads the latest Sublime Text build for macOS and the latest release of each
+package into the `repositories` directory. The type check uses the Python modules of that Sublime Text build. The script
+deletes and clones each package again on every run.
+
+```sh
+python3 scripts/checkout-repos.py
+```
+
+Options:
+
+- `--exclude NAME` - do not clone the package `NAME`. You can use this option more than one time.
+- `--preferred-branch BRANCH` - clone the branch `BRANCH` of each package. If a package does not have that branch, the
+  script clones its latest release.
+
+Then type-check all packages:
+
+```sh
+cd repositories
+uv sync
+uv run basedpyright
+```
+
 
 | Package name (maintainer) | Releases(tags) |
 |---------------------------|----------|
