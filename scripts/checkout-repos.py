@@ -46,18 +46,26 @@ def run_subprocess(args: list[str], *, cwd: Path, check: bool = True) -> subproc
     return subprocess.run(args, check=check, cwd=cwd)
 
 
-def apply_git_archive(name: str, *, target_dir: Path) -> None:
-    """Replace the cloned directory contents with a git archive export.
+def export_git_archive(source_dir: Path, package_dir: Path) -> None:
+    """Replace the contents of package_dir with a git archive export of HEAD of source_dir.
 
     This filters out anything marked as export-ignore in .gitattributes and
-    removes the .git directory, leaving a clean export in place.
+    removes the .git directory, leaving a clean export in place. The source_dir
+    can be package_dir itself.
     """
-    package_dir = target_dir / name
+    # LSP export-ignores its stubs, so copy them to the shared stubs directory before the export.
+    stubs_dir = source_dir / 'stubs'
+    if package_dir.name == 'LSP' and stubs_dir.is_dir():
+        target_stubs_dir = package_dir.parent / 'stubs'
+        if target_stubs_dir.is_dir():
+            shutil.rmtree(target_stubs_dir)
+        shutil.copytree(stubs_dir, target_stubs_dir)
     with tempfile.NamedTemporaryFile(suffix='.tar', delete=False) as tmp:
         tmp_path = Path(tmp.name)
     try:
-        run_subprocess(['git', 'archive', '--output', str(tmp_path), 'HEAD'], cwd=package_dir)
-        shutil.rmtree(package_dir)
+        run_subprocess(['git', 'archive', '--output', str(tmp_path), 'HEAD'], cwd=source_dir)
+        if package_dir.is_dir():
+            shutil.rmtree(package_dir)
         package_dir.mkdir()
         with tarfile.open(tmp_path) as tar:
             tar.extractall(package_dir)
@@ -88,14 +96,17 @@ def clone_repository(repo_url: str, name: str, tag_prefix: str | None, *, target
         if branch_override is not None:
             print(f'-> Branch {branch_override!r} not found, falling back to latest release')
         clone_release_or_default(repo_url, name, latest_release, target_dir=target_dir)
-    if name == 'LSP':
-        stubs_dir = package_dir / 'stubs'
-        if stubs_dir.is_dir():
-            target_stubs_dir = target_dir / 'stubs'
-            if target_stubs_dir.is_dir():
-                shutil.rmtree(target_stubs_dir)
-            shutil.move(str(stubs_dir), target_stubs_dir)
-    apply_git_archive(name, target_dir=target_dir)
+    export_git_archive(package_dir, package_dir)
+
+
+def export_local_repository(name: str, source_dir: Path, *, target_dir: Path) -> None:
+    """Export HEAD of a local repository in place of the latest release."""
+    print(f'Exporting {name} from {source_dir}...')
+    export_git_archive(source_dir, target_dir / name)
+    result = subprocess.run(
+        ['git', 'rev-parse', '--abbrev-ref', 'HEAD'], check=True, capture_output=True, text=True, cwd=source_dir
+    )
+    print(f'-> Exported {result.stdout.strip()!r}')
 
 
 def fetch_remote_refs(repo_url: str) -> tuple[set[str], list[str]]:
@@ -137,6 +148,16 @@ def clone_release_or_default(repo_url: str, name: str, latest_release: tuple[Pac
         git_clone(repo_url, name, target_dir=target_dir)
 
 
+def parse_local_package(value: str) -> tuple[str, Path]:
+    name, separator, path = value.partition('=')
+    if not name or not separator or not path:
+        raise argparse.ArgumentTypeError(f'expected NAME=PATH, got {value!r}')
+    source_dir = Path(path).expanduser().resolve()
+    if not (source_dir / '.git').exists():
+        raise argparse.ArgumentTypeError(f'{source_dir} is not a git repository')
+    return name, source_dir
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Clone or update all LSP-related repositories for local development.",
@@ -156,6 +177,15 @@ def parse_args() -> argparse.Namespace:
         help="Branch to check out in every repository after cloning. Falls back to the default branch if not found.",
     )
     parser.add_argument(
+        "--local",
+        metavar="NAME=PATH",
+        action="append",
+        default=[],
+        type=parse_local_package,
+        help="Export HEAD of the local git repository PATH as the package NAME instead of cloning the latest release. "
+        "Can be repeated (e.g. --local LSP=../LSP).",
+    )
+    parser.add_argument(
         "--no-collect-dependencies",
         action="store_true",
         help="Do not collect the dependencies of the packages into repositories/requirements-packages.txt. Use this "
@@ -167,14 +197,22 @@ def parse_args() -> argparse.Namespace:
 def main():
     args = parse_args()
     excluded: set[str] = set(args.exclude)
+    local_packages: dict[str, Path] = dict(args.local)
 
     try:
         repositories_dir = SCRIPT_DIR.parent / 'repositories'
 
         st_version = download_latest_sublime_text(repositories_dir)
 
-        for p in get_all_packages(st_version):
+        packages = get_all_packages(st_version)
+        for name in local_packages.keys() - {p["name"] for p in packages}:
+            print(f"Warning: {name} is not in the package list, ignoring --local {name}")
+
+        for p in packages:
             package_name: str = p["name"]
+            if package_name in local_packages:
+                export_local_repository(package_name, local_packages[package_name], target_dir=repositories_dir)
+                continue
             if package_name in excluded:
                 print(f"Skipping {package_name} (excluded)")
                 continue
