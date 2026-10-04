@@ -35,13 +35,17 @@ Options:
 - `--exclude NAME` - do not clone the package `NAME`. You can use this option more than one time.
 - `--preferred-branch BRANCH` - clone the branch `BRANCH` of each package. If a package does not have that branch, the
   script clones its latest release.
-- `--local NAME=PATH` - do not clone the package `NAME` and instead eport the current commit (`HEAD`) of the local git
+- `--local NAME=PATH` - do not clone the package `NAME` and instead export the current commit (`HEAD`) of the local git
   repository `PATH` in its place. Uncommitted changes are not exported. You can use this option more than one time.
   For example, to type-check all packages with the current branch of your LSP checkout:
 
   ```sh
   python3 scripts/checkout-repos.py --local LSP=../LSP
   ```
+
+  `NAME` can also be a dependency of the [LSP repository](https://github.com/sublimelsp/repository) (for example
+  `lsp_utils`). Then the type check uses the local export in place of the wheel from `requirements-packages.txt`. When
+  you run the script again without `--local` for that dependency, the script removes the export.
 
 - `--no-collect-dependencies` - do not collect the libraries. Use this option if you add or replace packages in
   `repositories` after the checkout. Then collect the libraries after that change:

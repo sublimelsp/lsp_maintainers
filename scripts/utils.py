@@ -21,14 +21,16 @@ class PackageRelease(TypedDict):
     tags: NotRequired[Literal[True] | str]
 
 
-def fetch_lsp_repository() -> dict[str, Any]:
-    with urllib.request.urlopen(LSP_REPOSITORY_URL) as response:
-        return json.loads(response.read().decode())
-
-
-def get_all_packages(st_version: int) -> list[Package]:
+def get_lsp_packages_and_dependencies(st_version: int) -> tuple[list[Package], set[str]]:
+    """
+    Return the packages that are compatible with the Sublime Text build `st_version`, and the names of the dependencies
+    (for example `lsp_utils`) of the LSP repository.
+    """
     packages = json.loads((SCRIPT_DIR.parent / "lsp_maintainers.sublime-settings").read_text(encoding='utf-8')).get('packages')
-    official_packages = fetch_lsp_repository()['packages']
+    with urllib.request.urlopen(LSP_REPOSITORY_URL) as response:
+        lsp_repository: dict[str, Any] = json.loads(response.read().decode())
+    official_packages = lsp_repository['packages']
+    dependency_names = {dependency['name'] for dependency in lsp_repository['dependencies']}
     all_packages: list[Package] = []
 
     for package in sorted(packages + official_packages, key=lambda item: item["name"].lower()):
@@ -50,7 +52,7 @@ def get_all_packages(st_version: int) -> list[Package]:
             else:
                 print(f'Skipping {package["name"]} as it is not compatible with current version of ST')
 
-    return all_packages
+    return all_packages, dependency_names
 
 
 # Utility extracted from Package Control

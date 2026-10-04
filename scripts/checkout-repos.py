@@ -16,7 +16,7 @@ from pathlib import Path
 
 from dependencies import collect_dependencies
 from package_version import PackageVersion, version_match_prefix
-from utils import get_all_packages
+from utils import get_lsp_packages_and_dependencies
 
 ST4_WEB_URL = 'https://www.sublimetext.com/download_thanks'
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -182,8 +182,8 @@ def parse_args() -> argparse.Namespace:
         action="append",
         default=[],
         type=parse_local_package,
-        help="Export HEAD of the local git repository PATH as the package NAME instead of cloning the latest release. "
-        "Can be repeated (e.g. --local LSP=../LSP).",
+        help="Export HEAD of the local git repository PATH as the package or LSP dependency NAME instead of using the "
+        "latest release. Can be repeated (e.g. --local LSP=../LSP --local lsp_utils=../lsp_utils).",
     )
     parser.add_argument(
         "--no-collect-dependencies",
@@ -204,9 +204,9 @@ def main():
 
         st_version = download_latest_sublime_text(repositories_dir)
 
-        packages = get_all_packages(st_version)
-        for name in local_packages.keys() - {p["name"] for p in packages}:
-            print(f"Warning: {name} is not in the package list, ignoring --local {name}")
+        packages, dependency_names = get_lsp_packages_and_dependencies(st_version)
+        for name in local_packages.keys() - {p["name"] for p in packages} - dependency_names:
+            print(f"Warning: {name} is not a package or an LSP dependency, ignoring --local {name}")
 
         for p in packages:
             package_name: str = p["name"]
@@ -219,6 +219,16 @@ def main():
             repo_url: str = p["details"]
             tag_prefix = p["tag_prefix"]
             clone_repository(repo_url, package_name, tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
+
+        # A dependency is installed from its wheel (see collect_dependencies), unless it is exported from a local
+        # repository. Remove an export of an earlier run, because it would replace the wheel.
+        for name in sorted(dependency_names):
+            dependency_dir = repositories_dir / name
+            if name in local_packages:
+                export_local_repository(name, local_packages[name], target_dir=repositories_dir)
+            elif dependency_dir.is_dir():
+                print(f"Removing {name} (exported by an earlier run)")
+                shutil.rmtree(dependency_dir)
 
         if not args.no_collect_dependencies:
             collect_dependencies(st_version)
