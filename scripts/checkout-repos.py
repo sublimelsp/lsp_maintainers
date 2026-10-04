@@ -182,20 +182,6 @@ def main():
             tag_prefix = p["tag_prefix"]
             clone_repository(repo_url, package_name, tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
 
-        tag_prefix = None
-        if 'lsp_utils' not in excluded:
-            clone_repository('https://github.com/sublimelsp/lsp_utils.git', 'lsp_utils', tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
-        if 'sublime_aio' not in excluded:
-            clone_repository('https://github.com/packagecontrol/sublime_aio.git', 'sublime_aio', tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
-        if 'sublime_lib' not in excluded:
-            cloned_directory_name = "sublime_lib_temp"
-            clone_repository('https://github.com/SublimeText/sublime_lib.git', cloned_directory_name, tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
-            sublime_lib_path = (repositories_dir / 'sublime_lib')
-            if sublime_lib_path.is_dir():
-                shutil.rmtree(sublime_lib_path)
-            shutil.move(str(repositories_dir / cloned_directory_name / 'sublime_lib'), str(repositories_dir))
-            shutil.rmtree(repositories_dir / cloned_directory_name)
-
         if not args.no_collect_dependencies:
             collect_dependencies(st_version)
     except KeyboardInterrupt:

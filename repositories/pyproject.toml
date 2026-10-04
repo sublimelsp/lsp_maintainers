@@ -1,16 +1,16 @@
 [project]
 name = "lsp-maintainers"
 version = "1.0.0"
-license = "MIT"
 requires-python = "==3.8.*"
+license = "MIT"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
 ]
 # The libraries that the packages depend on are not listed here. Generate `requirements-packages.txt` with
 # `scripts/collect-dependencies.py` and install it with `uv pip install -r requirements-packages.txt`.
 dependencies = [
-    "basedpyright>=1.39.6",
+  "basedpyright>=1.39.6",
 ]
 
 [tool.pyright]
@@ -20,21 +20,18 @@ reportIncompatibleMethodOverride = "none"
 reportMissingModuleSource = "none"
 stubPath = "./stubs"
 extraPaths = [
-    "Sublime Text.app/Contents/MacOS/Lib/python38/",
-    "lsp_utils/",
-    "sublime-aio/src",
+  "Sublime Text.app/Contents/MacOS/Lib/python38/",
+  "lsp_utils/",
 ]
 exclude = [
-    "./Sublime Text.app/",
-    "./LSP-basedpyright/syntaxes",
-    "./LSP-jdtls/modules",
-    "./LSP-julia/testrunner",
-    "./LSP-metals/core",
-    "./LSP-pyright/syntaxes",
-    "./sublime_aio",
-    "./sublime_lib",
-    "**/__pycache__",
-    "**/third_party",
-    "**/node_modules",
-    "**/.*"
+  "./Sublime Text.app/",
+  "./LSP-basedpyright/syntaxes",
+  "./LSP-jdtls/modules",
+  "./LSP-julia/testrunner",
+  "./LSP-metals/core",
+  "./LSP-pyright/syntaxes",
+  "**/__pycache__",
+  "**/third_party",
+  "**/node_modules",
+  "**/.*",
 ]

@@ -26,8 +26,9 @@ python3 scripts/checkout-repos.py
 After cloning, the script collects the libraries that the packages depend on. It reads the `dependencies.json` file of
 each package in `repositories` and writes the libraries to `repositories/requirements-packages.txt`. It pins each
 library to the version that Package Control provides for the Python version of the type check
-(`tool.pyright.pythonVersion` in `repositories/pyproject.toml`). It does not write libraries that are checked out from
-source (for example `lsp_utils`) or that have stubs in `repositories/stubs`.
+(`tool.pyright.pythonVersion` in `repositories/pyproject.toml`). If PyPI does not have that version (for example
+`lsp_utils`), the requirement points to the wheel of the Package Control release. It does not write libraries that are
+checked out in `repositories` or that have stubs in `repositories/stubs`.
 
 Options:
 

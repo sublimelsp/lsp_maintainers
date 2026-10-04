@@ -74,17 +74,17 @@ def fetch_channel_libraries() -> dict[str, dict[str, Any]]:
     }
 
 
-def get_latest_version(
+def get_latest_release(
     library: dict[str, Any], python_version: str, st_version: int, platform_selectors: list[str]
-) -> str | None:
-    versions = [
-        PackageVersion(release['version'])
+) -> dict[str, Any] | None:
+    releases = [
+        release
         for release in library['releases']
         if python_version in release['python_versions']
         and is_compatible_version(release['sublime_text'], st_version)
         and set(release['platforms']) & set(platform_selectors)
     ]
-    return str(max(versions)) if versions else None
+    return max(releases, key=lambda release: PackageVersion(release['version']), default=None)
 
 
 def pypi_url_exists(url: str) -> bool:
@@ -97,10 +97,19 @@ def pypi_url_exists(url: str) -> bool:
         raise
 
 
-def get_requirement(name: str, version: str) -> str | None:
-    """Return the PyPI requirement for a Package Control library, or `None` if PyPI does not have the library."""
+def get_requirement(name: str, release: dict[str, Any]) -> str | None:
+    """
+    Return the requirement for a Package Control library release, or `None` if pip cannot install it.
+
+    Prefer PyPI, because PyPI selects the correct wheel for the current platform. If PyPI does not have the release,
+    use the wheel URL of the Package Control release.
+    """
+    version: str = release['version']
+    url: str = release['url']
     if pypi_url_exists(f'{PYPI_URL}/{name}/{version}/json'):
         return f'{name}=={version}'
+    if url.endswith('.whl'):
+        return f'{name} @ {url}'
     if pypi_url_exists(f'{PYPI_URL}/{name}/json'):
         print(f'Not pinning {name}, because PyPI does not have the Package Control version {version}')
         return name
@@ -114,7 +123,8 @@ def collect_dependencies(st_version: int) -> None:
     The function reads the `dependencies.json` file of each package and writes the requirements to
     `repositories/requirements-packages.txt`. It pins each library to the latest version that Package Control provides
     for the Python version of the type check and for the Sublime Text build `st_version`. If PyPI does not have that
-    version, the requirement is not pinned.
+    version, the requirement points to the wheel of the Package Control release. If that release has no wheel, the
+    requirement is not pinned.
     """
     python_version = get_python_version()
     platform_selectors = get_platform_selectors()
@@ -134,14 +144,14 @@ def collect_dependencies(st_version: int) -> None:
             print(f'Skipping {name} (source checkout or stubs)')
             continue
         library = channel_libraries.get(name)
-        version = get_latest_version(library, python_version, st_version, platform_selectors) if library else None
-        if version is None:
+        release = get_latest_release(library, python_version, st_version, platform_selectors) if library else None
+        if release is None:
             packages = ', '.join(sorted(required[name]))
             print(f'Skipping {name} (no Package Control release for Python {python_version}), used by: {packages}')
             continue
-        requirement = get_requirement(name, version)
+        requirement = get_requirement(name, release)
         if requirement is None:
-            print(f'Skipping {name} (not on PyPI)')
+            print(f'Skipping {name} (not on PyPI and no wheel in Package Control)')
             continue
         requirements.append(requirement)
 
