@@ -65,29 +65,28 @@ def apply_git_archive(name: str, *, target_dir: Path) -> None:
         tmp_path.unlink(missing_ok=True)
 
 
-def git_clone(repo_url: str, name: str, *, target_dir: Path, branch: str | None = None, check: bool = True) -> bool:
-    """Shallow-clone the repository. Return True on success. Raise on failure when check is True."""
+def git_clone(repo_url: str, name: str, *, target_dir: Path, branch: str | None = None) -> None:
+    """Shallow-clone the repository."""
     # Cloning a tag checks out a detached HEAD, so turn off the related advice.
     args = ['git', '-c', 'advice.detachedHead=false', 'clone', '--quiet', '--depth=1']
     if branch is not None:
         args += ['--branch', branch]
-    return run_subprocess([*args, repo_url, name], cwd=target_dir, check=check).returncode == 0
+    run_subprocess([*args, repo_url, name], cwd=target_dir)
 
 
 def clone_repository(repo_url: str, name: str, tag_prefix: str | None, *, target_dir: Path, branch_override: str | None = None) -> None:
-    tags = fetch_remote_tags(repo_url)
+    branches, tags = fetch_remote_refs(repo_url)
     latest_release = next(get_sorted_releases(tags, tag_prefix), None)
     print(f'Cloning {name}...')
     package_dir = target_dir / name
     if package_dir.is_dir():
         shutil.rmtree(package_dir)
-    if branch_override is not None:
-        if git_clone(repo_url, name, target_dir=target_dir, branch=branch_override, check=False):
-            print(f'-> Cloned branch {branch_override!r}')
-        else:
-            print(f'-> Branch {branch_override!r} not found, falling back to latest release')
-            clone_release_or_default(repo_url, name, latest_release, target_dir=target_dir)
+    if branch_override is not None and branch_override in branches:
+        git_clone(repo_url, name, target_dir=target_dir, branch=branch_override)
+        print(f'-> Cloned branch {branch_override!r}')
     else:
+        if branch_override is not None:
+            print(f'-> Branch {branch_override!r} not found, falling back to latest release')
         clone_release_or_default(repo_url, name, latest_release, target_dir=target_dir)
     if name == 'LSP':
         stubs_dir = package_dir / 'stubs'
@@ -99,14 +98,22 @@ def clone_repository(repo_url: str, name: str, tag_prefix: str | None, *, target
     apply_git_archive(name, target_dir=target_dir)
 
 
-def fetch_remote_tags(repo_url: str) -> list[str]:
-    """Return all tag names of the remote repository without cloning it."""
+def fetch_remote_refs(repo_url: str) -> tuple[set[str], list[str]]:
+    """Return the branch names and tag names of the remote repository without cloning it."""
     result = subprocess.run(
-        ['git', 'ls-remote', '--tags', '--refs', repo_url],
+        ['git', 'ls-remote', '--heads', '--tags', '--refs', repo_url],
         check=True, capture_output=True, text=True,
     )
-    # Each line looks like: "<sha>\trefs/tags/<name>". --refs drops the peeled "^{}" entries.
-    return [line.split('refs/tags/', 1)[1] for line in result.stdout.splitlines() if 'refs/tags/' in line]
+    branches: set[str] = set()
+    tags: list[str] = []
+    # Each line looks like: "<sha>\trefs/<heads|tags>/<name>". --refs drops the peeled "^{}" entries.
+    for line in result.stdout.splitlines():
+        ref = line.split('\t', 1)[1]
+        if ref.startswith('refs/heads/'):
+            branches.add(ref.removeprefix('refs/heads/'))
+        elif ref.startswith('refs/tags/'):
+            tags.append(ref.removeprefix('refs/tags/'))
+    return branches, tags
 
 
 def get_sorted_releases(tags: list[str], tag_prefix: str | None) -> Generator[tuple[PackageVersion, str]]:
