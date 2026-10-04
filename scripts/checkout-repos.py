@@ -13,7 +13,6 @@ import urllib.request
 import zipfile
 from collections.abc import Generator
 from pathlib import Path
-from typing import Literal, overload
 
 from dependencies import collect_dependencies
 from package_version import PackageVersion, version_match_prefix
@@ -24,7 +23,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 
 
-def download_st4(target_dir: Path) -> int:
+def download_latest_sublime_text(target_dir: Path) -> int:
     with urllib.request.urlopen(urllib.request.Request(ST4_WEB_URL, headers={'User-Agent': 'Mozilla/5.0'})) as resp:
         html = resp.read().decode('utf-8', errors='replace')
     match = re.search(r'href="([^"]*_(\d+)_mac\.zip)"', html)
@@ -43,13 +42,8 @@ def download_st4(target_dir: Path) -> int:
         raise RuntimeError('Failed to found link to the latest version of Sublime Text')
 
 
-@overload
-def run_subprocess(args: list[str], *, cwd: Path, check: Literal[False]) -> subprocess.CompletedProcess[bytes]: ...
-@overload
-def run_subprocess(args: list[str], *, cwd: Path) -> None: ...
-def run_subprocess(args: list[str], *, cwd: Path, check: Literal[False] | None = None) -> subprocess.CompletedProcess[bytes] | None:
-    check_final = check is None
-    return subprocess.run(args, check=check_final, cwd=cwd)
+def run_subprocess(args: list[str], *, cwd: Path, check: bool = True) -> subprocess.CompletedProcess[bytes]:
+    return subprocess.run(args, check=check, cwd=cwd)
 
 
 def apply_git_archive(name: str, *, target_dir: Path) -> None:
@@ -71,6 +65,15 @@ def apply_git_archive(name: str, *, target_dir: Path) -> None:
         tmp_path.unlink(missing_ok=True)
 
 
+def git_clone(repo_url: str, name: str, *, target_dir: Path, branch: str | None = None, check: bool = True) -> bool:
+    """Shallow-clone the repository. Return True on success. Raise on failure when check is True."""
+    # Cloning a tag checks out a detached HEAD, so turn off the related advice.
+    args = ['git', '-c', 'advice.detachedHead=false', 'clone', '--quiet', '--depth=1']
+    if branch is not None:
+        args += ['--branch', branch]
+    return run_subprocess([*args, repo_url, name], cwd=target_dir, check=check).returncode == 0
+
+
 def clone_repository(repo_url: str, name: str, tag_prefix: str | None, *, target_dir: Path, branch_override: str | None = None) -> None:
     tags = fetch_remote_tags(repo_url)
     latest_release = next(get_sorted_releases(tags, tag_prefix), None)
@@ -79,11 +82,10 @@ def clone_repository(repo_url: str, name: str, tag_prefix: str | None, *, target
     if package_dir.is_dir():
         shutil.rmtree(package_dir)
     if branch_override is not None:
-        result = run_subprocess(["git", "clone", "--depth=1", "--branch", branch_override, repo_url, name], cwd=target_dir, check=False)
-        if result.returncode == 0:
-            print(f'Cloned branch {branch_override!r} for {name}')
+        if git_clone(repo_url, name, target_dir=target_dir, branch=branch_override, check=False):
+            print(f'-> Cloned branch {branch_override!r}')
         else:
-            print(f'Branch {branch_override!r} not found in {name}, falling back to latest release')
+            print(f'-> Branch {branch_override!r} not found, falling back to latest release')
             clone_release_or_default(repo_url, name, latest_release, target_dir=target_dir)
     else:
         clone_release_or_default(repo_url, name, latest_release, target_dir=target_dir)
@@ -121,11 +123,11 @@ def clone_release_or_default(repo_url: str, name: str, latest_release: tuple[Pac
     """Clone the latest release tag, or the default branch when there are no releases."""
     if latest_release:
         tag = latest_release[1]
-        run_subprocess(["git", "clone", "--depth=1", "--branch", tag, repo_url, name], cwd=target_dir)
-        print(f'Cloned tag {tag!r} for {name}')
+        git_clone(repo_url, name, target_dir=target_dir, branch=tag)
+        print(f'-> Cloned latest release tag {tag!r}')
     else:
-        print(f'No releases found for {name}, falling back to default branch')
-        run_subprocess(["git", "clone", "--depth=1", repo_url, name], cwd=target_dir)
+        print('-> Warning: No releases found, falling back to default branch')
+        git_clone(repo_url, name, target_dir=target_dir)
 
 
 def parse_args() -> argparse.Namespace:
@@ -162,7 +164,7 @@ def main():
     try:
         repositories_dir = SCRIPT_DIR.parent / 'repositories'
 
-        st_version = download_st4(repositories_dir)
+        st_version = download_latest_sublime_text(repositories_dir)
 
         for p in get_all_packages(st_version):
             package_name: str = p["name"]

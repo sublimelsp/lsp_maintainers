@@ -4,12 +4,12 @@ import json
 import platform
 import plistlib
 import re
-import tomllib
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any
 
+import tomllib
 from package_version import PackageVersion
 from utils import is_compatible_version
 
