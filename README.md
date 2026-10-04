@@ -57,6 +57,9 @@ Options:
   `lsp_utils`). Then the type check uses the local export in place of the wheel from `requirements-packages.txt`. When
   you run the script again without `--local` for that dependency, the script removes the export.
 
+  `NAME` can also be a package that is not in the LSP repository yet, for example a new package. Then you can also
+  give `NAME` to `--only`. The script does not remove the export of such a package in later runs.
+
 - `--no-collect-dependencies` - do not collect the libraries. Use this option if you add or replace packages in
   `repositories` after the checkout. Then collect the libraries after that change:
 

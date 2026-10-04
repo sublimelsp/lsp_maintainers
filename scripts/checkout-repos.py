@@ -214,11 +214,11 @@ def main():
 
         packages, dependency_names = get_lsp_packages_and_dependencies(st_version)
         package_names = {p["name"] for p in packages}
-        if unknown_names := set(args.only) - package_names:
+        # A local package that is not in the package list, for example a new package that is not in the LSP repository.
+        extra_local_names = local_packages.keys() - package_names - dependency_names
+        if unknown_names := set(args.only) - package_names - extra_local_names:
             raise SystemExit(f"Error: --only names unknown packages: {', '.join(sorted(unknown_names))}")
-        selected_names = {*args.only, 'LSP'} if args.only else package_names
-        for name in local_packages.keys() - package_names - dependency_names:
-            print(f"Warning: {name} is not a package or an LSP dependency, ignoring --local {name}")
+        selected_names = {*args.only, 'LSP'} if args.only else package_names | extra_local_names
 
         for p in packages:
             package_name: str = p["name"]
@@ -237,6 +237,13 @@ def main():
             repo_url: str = p["details"]
             tag_prefix = p["tag_prefix"]
             clone_repository(repo_url, package_name, tag_prefix, target_dir=repositories_dir, branch_override=args.branch)
+
+        for name in sorted(extra_local_names):
+            if name not in selected_names:
+                print(f"Skipping {name} (not selected by --only)")
+                continue
+            print(f"{name} is not in the package list")
+            export_local_repository(name, local_packages[name], target_dir=repositories_dir)
 
         # A dependency is installed from its wheel (see collect_dependencies), unless it is exported from a local
         # repository. Remove an export of an earlier run, because it would replace the wheel.
