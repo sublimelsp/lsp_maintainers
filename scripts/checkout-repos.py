@@ -170,6 +170,14 @@ def parse_args() -> argparse.Namespace:
         help="Package name to skip. Can be repeated (e.g. --exclude LSP-typescript --exclude LSP-eslint).",
     )
     parser.add_argument(
+        "--only",
+        metavar="NAME",
+        action="append",
+        default=[],
+        help="Check out only the package NAME and LSP, which all packages depend on. Removes the other packages from "
+        "earlier runs. Can be repeated (e.g. --only LSP-pyright --local LSP-pyright=.).",
+    )
+    parser.add_argument(
         "--preferred-branch",
         metavar="BRANCH",
         default=None,
@@ -205,11 +213,21 @@ def main():
         st_version = download_latest_sublime_text(repositories_dir)
 
         packages, dependency_names = get_lsp_packages_and_dependencies(st_version)
-        for name in local_packages.keys() - {p["name"] for p in packages} - dependency_names:
+        package_names = {p["name"] for p in packages}
+        if unknown_names := set(args.only) - package_names:
+            raise SystemExit(f"Error: --only names unknown packages: {', '.join(sorted(unknown_names))}")
+        selected_names = {*args.only, 'LSP'} if args.only else package_names
+        for name in local_packages.keys() - package_names - dependency_names:
             print(f"Warning: {name} is not a package or an LSP dependency, ignoring --local {name}")
 
         for p in packages:
             package_name: str = p["name"]
+            if package_name not in selected_names:
+                package_dir = repositories_dir / package_name
+                if package_dir.is_dir():
+                    print(f"Removing {package_name} (not selected by --only)")
+                    shutil.rmtree(package_dir)
+                continue
             if package_name in local_packages:
                 export_local_repository(package_name, local_packages[package_name], target_dir=repositories_dir)
                 continue

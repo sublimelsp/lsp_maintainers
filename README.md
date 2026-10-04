@@ -33,6 +33,16 @@ checked out in `repositories` or that have stubs in `repositories/stubs`.
 Options:
 
 - `--exclude NAME` - do not clone the package `NAME`. You can use this option more than one time.
+- `--only NAME` - clone only the package `NAME` and LSP, because all packages depend on LSP. The script removes the
+  other packages of earlier runs from `repositories`. You can use this option more than one time. For example, to
+  type-check the current commit of a package in the repository of that package:
+
+  ```sh
+  python3 path/to/lsp_maintainers/scripts/checkout-repos.py --only LSP-pyright --local LSP-pyright=.
+  ```
+
+  To show only the errors of that package and not the errors of LSP, give the package directory to the type check:
+  `uv run basedpyright LSP-pyright`.
 - `--preferred-branch BRANCH` - clone the branch `BRANCH` of each package. If a package does not have that branch, the
   script clones its latest release.
 - `--local NAME=PATH` - do not clone the package `NAME` and instead export the current commit (`HEAD`) of the local git
