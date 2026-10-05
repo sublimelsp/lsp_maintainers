@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any, Literal, NotRequired, TypedDict
@@ -21,14 +22,15 @@ class PackageRelease(TypedDict):
     tags: NotRequired[Literal[True] | str]
 
 
-def get_lsp_packages_and_dependencies(st_version: int) -> tuple[list[Package], set[str]]:
+def get_lsp_packages_and_dependencies(
+    st_version: int, repository: str = LSP_REPOSITORY_URL
+) -> tuple[list[Package], set[str]]:
     """
     Return the packages that are compatible with the Sublime Text build `st_version`, and the names of the dependencies
-    (for example `lsp_utils`) of the LSP repository.
+    (for example `lsp_utils`) of the LSP repository. `repository` is the URL or the local path of its repository.json.
     """
     packages = json.loads((SCRIPT_DIR.parent / "lsp_maintainers.sublime-settings").read_text(encoding='utf-8')).get('packages')
-    with urllib.request.urlopen(LSP_REPOSITORY_URL) as response:
-        lsp_repository: dict[str, Any] = json.loads(response.read().decode())
+    lsp_repository: dict[str, Any] = json.loads(read_repository(repository))
     official_packages = lsp_repository['packages']
     dependency_names = {dependency['name'] for dependency in lsp_repository['dependencies']}
     all_packages: list[Package] = []
@@ -53,6 +55,13 @@ def get_lsp_packages_and_dependencies(st_version: int) -> tuple[list[Package], s
                 print(f'Skipping {package["name"]} as it is not compatible with current version of ST')
 
     return all_packages, dependency_names
+
+
+def read_repository(repository: str) -> str:
+    if urllib.parse.urlparse(repository).scheme in ('http', 'https', 'file'):
+        with urllib.request.urlopen(repository) as response:
+            return response.read().decode()
+    return Path(repository).expanduser().read_text(encoding='utf-8')
 
 
 # Utility extracted from Package Control

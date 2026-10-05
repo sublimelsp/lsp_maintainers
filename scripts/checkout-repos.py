@@ -16,7 +16,7 @@ from pathlib import Path
 
 from dependencies import collect_dependencies
 from package_version import PackageVersion, version_match_prefix
-from utils import get_lsp_packages_and_dependencies
+from utils import LSP_REPOSITORY_URL, get_lsp_packages_and_dependencies
 
 ST4_WEB_URL = 'https://www.sublimetext.com/download_thanks'
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -194,6 +194,13 @@ def parse_args() -> argparse.Namespace:
         "latest release. Can be repeated (e.g. --local LSP=../LSP --local lsp_utils=../lsp_utils).",
     )
     parser.add_argument(
+        "--repository",
+        metavar="URL_OR_PATH",
+        default=LSP_REPOSITORY_URL,
+        help="URL or local path of the repository.json of the LSP repository to read the packages from, for example "
+        "the version of a pull request. Defaults to the main branch of sublimelsp/repository.",
+    )
+    parser.add_argument(
         "--no-collect-dependencies",
         action="store_true",
         help="Do not collect the dependencies of the packages into repositories/requirements-packages.txt. Use this "
@@ -212,7 +219,7 @@ def main():
 
         st_version = download_latest_sublime_text(repositories_dir)
 
-        packages, dependency_names = get_lsp_packages_and_dependencies(st_version)
+        packages, dependency_names = get_lsp_packages_and_dependencies(st_version, args.repository)
         package_names = {p["name"] for p in packages}
         # A local package that is not in the package list, for example a new package that is not in the LSP repository.
         extra_local_names = local_packages.keys() - package_names - dependency_names

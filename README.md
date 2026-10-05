@@ -60,6 +60,17 @@ Options:
   `NAME` can also be a package that is not in the LSP repository yet, for example a new package. Then you can also
   give `NAME` to `--only`. The script does not remove the export of such a package in later runs.
 
+- `--repository URL_OR_PATH` - read the packages from this `repository.json` and not from the main branch of the
+  [LSP repository](https://github.com/sublimelsp/repository). `URL_OR_PATH` is a URL or a local file. For example, to
+  type-check a package that a pull request to the LSP repository adds or updates:
+
+  ```sh
+  python3 path/to/lsp_maintainers/scripts/checkout-repos.py --only LSP-pyright --repository path/to/repository/repository.json
+  ```
+
+  In a GitHub workflow of the LSP repository, give the `repository.json` of the pull request checkout, or its raw URL
+  (`https://raw.githubusercontent.com/<owner>/<repo>/<sha>/repository.json`).
+
 - `--no-collect-dependencies` - do not collect the libraries. Use this option if you add or replace packages in
   `repositories` after the checkout. Then collect the libraries after that change:
 
