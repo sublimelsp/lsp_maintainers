@@ -3,15 +3,10 @@ name = "lsp-maintainers"
 version = "1.0.0"
 requires-python = "==3.8.*"
 license = "MIT"
-classifiers = [
-  "Operating System :: OS Independent",
-  "Programming Language :: Python :: 3",
-]
+classifiers = ["Operating System :: OS Independent", "Programming Language :: Python :: 3"]
 # The libraries that the packages depend on are not listed here. Generate `requirements-packages.txt` with
 # `scripts/collect-dependencies.py` and install it with `uv pip install -r requirements-packages.txt`.
-dependencies = [
-  "basedpyright>=1.39.6",
-]
+dependencies = ["basedpyright>=1.39.6"]
 
 [tool.pyright]
 pythonVersion = "3.8"
@@ -19,10 +14,7 @@ typeCheckingMode = "standard"
 reportIncompatibleMethodOverride = "none"
 reportMissingModuleSource = "none"
 stubPath = "./stubs"
-extraPaths = [
-  "Sublime Text.app/Contents/MacOS/Lib/python38/",
-  "lsp_utils/",
-]
+extraPaths = ["Sublime Text.app/Contents/MacOS/Lib/python38/", "lsp_utils/"]
 exclude = [
   "./Sublime Text.app/",
   "./LSP-basedpyright/syntaxes",
@@ -34,4 +26,14 @@ exclude = [
   "**/third_party",
   "**/node_modules",
   "**/.*",
+]
+
+[tool.ruff.lint]
+# The packages are checked out only to type-check them, so do not report how they import modules.
+ignore = [
+  "E4", # import placement (E401, E402)
+  "F401", # unused import
+  "F403", # star import
+  "F405", # name possibly from star import
+  "I", # import sorting
 ]
