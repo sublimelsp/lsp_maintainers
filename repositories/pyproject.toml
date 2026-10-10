@@ -1,7 +1,7 @@
 [project]
 name = "lsp-maintainers"
 version = "1.0.0"
-requires-python = "==3.8.*"
+requires-python = "==3.14.*"
 license = "MIT"
 classifiers = ["Operating System :: OS Independent", "Programming Language :: Python :: 3"]
 # The libraries that the packages depend on are not listed here. Generate `requirements-packages.txt` with
