@@ -31,7 +31,11 @@ def get_lsp_packages_and_dependencies(
     """
     packages = json.loads((SCRIPT_DIR.parent / "lsp_maintainers.sublime-settings").read_text(encoding='utf-8')).get('packages')
     lsp_repository: dict[str, Any] = json.loads(read_repository(repository))
-    official_packages = lsp_repository['packages']
+    # Package Control allows omitting the name, in which case it is the repository name from the details URL.
+    official_packages = [
+        {**package, 'name': package.get('name') or package_name_from_details(package['details'])}
+        for package in lsp_repository['packages']
+    ]
     dependency_names = {dependency['name'] for dependency in lsp_repository['dependencies']}
     all_packages: list[Package] = []
 
@@ -55,6 +59,11 @@ def get_lsp_packages_and_dependencies(
                 print(f'Skipping {package["name"]} as it is not compatible with current version of ST')
 
     return all_packages, dependency_names
+
+
+def package_name_from_details(details: str) -> str:
+    """Return the repository name from a details URL like `https://github.com/<owner>/<repo>[/tree/<branch>]`."""
+    return urllib.parse.urlparse(details).path.strip('/').split('/')[1]
 
 
 def read_repository(repository: str) -> str:
