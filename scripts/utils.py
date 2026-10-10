@@ -62,8 +62,13 @@ def get_lsp_packages_and_dependencies(
 
 
 def package_name_from_details(details: str) -> str:
-    """Return the repository name from a details URL like `https://github.com/<owner>/<repo>[/tree/<branch>]`."""
-    return urllib.parse.urlparse(details).path.strip('/').split('/')[1]
+    """
+    Return the repository name from a details URL like `https://github.com/<owner>/<repo>[/tree/<branch>]`. GitLab URLs
+    can contain nested groups (`https://gitlab.com/<group>/<subgroup>/<repo>[/-/tree/<branch>]`), so the name is the
+    last path segment before the branch part.
+    """
+    path = re.sub(r'/(?:-|tree|src)/.*$', '', urllib.parse.urlparse(details).path.strip('/'))
+    return path.rsplit('/', 1)[-1]
 
 
 def read_repository(repository: str) -> str:
