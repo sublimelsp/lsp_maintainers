@@ -1,0 +1,94 @@
+name: Type-check LSP packages
+description: >-
+  Check out the packages declared in the LSP repository and other manually declared in lsp_maintainers
+  and type-check them with basedpyright against the latest Sublime Text build.
+  See "Type-check all packages" in the README of sublimelsp/lsp_maintainers.
+
+inputs:
+  local:
+    description: >-
+      Packages to type-check from a local git repository and not from their latest release, one NAME=PATH per line.
+      PATH is relative to the workspace. For example `LSP=.` when the repository is checked out at the default path.
+    required: false
+    default: ''
+  preferred-branch:
+    description: >-
+      Check out this branch of each package. If a package does not have that branch, check out its latest release.
+      The default is the head branch of the pull request. Set it to an empty string to always check out the latest
+      releases.
+    required: false
+    default: ${{ github.head_ref }}
+  exclude:
+    description: >-
+      Packages not to check out, one name per line. These are in addition to the packages that the action always
+      excludes.
+    required: false
+    default: ''
+  only:
+    description: Check out only these packages and LSP, one name per line.
+    required: false
+    default: ''
+  repository:
+    description: >-
+      URL or path (relative to the workspace) of the repository.json to read the packages from. The default is the
+      main branch of sublimelsp/repository.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Check out packages
+      shell: python3 -B {0}
+      working-directory: ${{ github.action_path }}
+      env:
+        INPUT_LOCAL: ${{ inputs.local }}
+        INPUT_PREFERRED_BRANCH: ${{ inputs.preferred-branch }}
+        INPUT_EXCLUDE: ${{ inputs.exclude }}
+        INPUT_ONLY: ${{ inputs.only }}
+        INPUT_REPOSITORY: ${{ inputs.repository }}
+      run: |
+        import os
+        import subprocess
+        import sys
+
+        def lines(name):
+            return [line.strip() for line in os.environ[name].splitlines() if line.strip()]
+
+        workspace = os.environ['GITHUB_WORKSPACE']
+        # Packages that do not pass the type check.
+        excluded = [
+            'Chialisp',
+            'LSP-aurelia',
+            'LSP-gnols',
+            'LSP-MaaFramework',
+            'LSP-pawnforge',
+            'LSP-pyvoice',
+            'LSP-vale-ls',
+            'WolframLanguage',
+            *lines('INPUT_EXCLUDE'),
+        ]
+        args = [arg for name in excluded for arg in ('--exclude', name)]
+        for name in lines('INPUT_ONLY'):
+            args += ['--only', name]
+        for entry in lines('INPUT_LOCAL'):
+            name, _, path = entry.partition('=')
+            args += ['--local', f'{name}={os.path.join(workspace, path)}']
+        if branch := os.environ['INPUT_PREFERRED_BRANCH']:
+            args += ['--preferred-branch', branch]
+        if repository := os.environ['INPUT_REPOSITORY']:
+            if '://' not in repository:
+                repository = os.path.join(workspace, repository)
+            args += ['--repository', repository]
+        sys.exit(subprocess.run([sys.executable, '-B', 'scripts/checkout-repos.py', *args]).returncode)
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.3.0
+
+    - name: Type-check packages
+      shell: bash
+      working-directory: ${{ github.action_path }}/repositories
+      run: |
+        uv sync
+        uv pip install -r requirements-packages.txt
+        uv run basedpyright
