@@ -87,6 +87,40 @@ uv pip install -r requirements-packages.txt
 uv run basedpyright
 ```
 
+### GitHub action
+
+The repository is also a GitHub action that runs the checkout and the type check. For example, to type-check all
+packages with the pull request of a package in its repository:
+
+```yaml
+name: Test Community Packages
+
+on:
+  pull_request:
+
+jobs:
+  type-check:
+    name: Type-check community packages
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: sublimelsp/lsp_maintainers@main
+        with:
+          local: LSP=.
+```
+
+Inputs (all optional):
+
+- `local` - packages to type-check from a local git repository, one `NAME=PATH` per line (`--local`). `PATH` is
+  relative to the workspace.
+- `preferred-branch` - branch to check out in each package (`--preferred-branch`). The default is the head branch of
+  the pull request. Set it to `''` to check out the latest releases.
+- `exclude` - more packages not to check out, one name per line (`--exclude`). The action always excludes the packages
+  that do not pass the type check.
+- `only` - check out only these packages and LSP, one name per line (`--only`).
+- `repository` - URL or path (relative to the workspace) of the `repository.json` to read the packages from
+  (`--repository`).
+
 
 | Package name (maintainer) | Releases(tags) |
 |---------------------------|----------|
