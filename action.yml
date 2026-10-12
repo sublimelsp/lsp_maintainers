@@ -62,7 +62,6 @@ runs:
             'LSP-aurelia',
             'LSP-gnols',
             'LSP-MaaFramework',
-            'LSP-pawnforge',
             'LSP-pyvoice',
             'LSP-vale-ls',
             'WolframLanguage',
