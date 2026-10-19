@@ -126,7 +126,6 @@ Inputs (all optional):
 |---------------------------|----------|
 | Chialisp ([cameroncooper](https://github.com/cameroncooper/sublime-chialisp))     | >=4000   |
 | LSP     | 3154 - 4069(3154-), >=4070(4070-)   |
-| LSP-anakin     |    |
 | LSP-angular     | 3154 - 3999(st3-), >=4000   |
 | LSP-astro     | >=4070   |
 | LSP-aurelia ([LetsZiggy](https://github.com/LetsZiggy/LSP-aurelia))     |    |

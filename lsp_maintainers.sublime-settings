@@ -1,10 +1,6 @@
 {
     "packages": [
         {
-            "details": "https://github.com/sublimelsp/LSP-anakin",
-            "name": "LSP-anakin"
-        },
-        {
             "details": "https://github.com/LetsZiggy/LSP-aurelia",
             "name": "LSP-aurelia"
         },
