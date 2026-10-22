@@ -7,7 +7,7 @@ import threading
 import sublime
 import sublime_plugin
 
-from .scripts.utils import get_all_packages
+from .scripts.utils import get_lsp_packages_and_dependencies
 
 ST_VERSION = int(sublime.version())
 
@@ -21,7 +21,7 @@ def clone(window: sublime.Window):
     packages_path = sublime.packages_path()
     variables = window.extract_variables()
 
-    for package in get_all_packages(ST_VERSION):
+    for package in get_lsp_packages_and_dependencies(ST_VERSION)[0]:
         already_exist = os.path.exists(os.path.join(packages_path, package['name']))
         if already_exist:
             print('Project {} already exist'.format(package['name']))
@@ -42,7 +42,7 @@ class OpenLspProjectsCommand(sublime_plugin.WindowCommand):
         project_data = self.window.project_data() or {}
         folders = project_data.get('folders') or []
 
-        for package in get_all_packages(ST_VERSION):
+        for package in get_lsp_packages_and_dependencies(ST_VERSION)[0]:
             package_path = os.path.join(packages_path, package['name'])
             folders.append({"path": package_path})
         self.window.set_project_data({
