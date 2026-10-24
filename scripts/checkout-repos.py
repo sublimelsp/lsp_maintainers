@@ -15,11 +15,21 @@ from collections.abc import Generator
 from pathlib import Path
 
 from dependencies import collect_dependencies
-from package_version import PackageVersion, version_match_prefix
+from package_version import PackageVersion
 from utils import LSP_REPOSITORY_URL, get_lsp_packages_and_dependencies
 
 ST4_WEB_URL = 'https://www.sublimetext.com/download_thanks'
 SCRIPT_DIR = Path(__file__).resolve().parent
+# The SemVer pattern that the crawler of Package Control uses for tag releases.
+SEMVER_RE = re.compile(
+    r'^'
+    r'(0|[1-9]\d*)\.'  # major
+    r'(0|[1-9]\d*)\.'  # minor
+    r'(0|[1-9]\d*)'  # patch
+    r'(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?'  # pre-release
+    r'(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?'  # build metadata
+    r'$'
+)
 
 
 
@@ -127,11 +137,32 @@ def fetch_remote_refs(repo_url: str) -> tuple[set[str], list[str]]:
     return branches, tags
 
 
+def match_tag_version(tag: str, tag_prefix: str | None) -> PackageVersion | None:
+    """
+    Return the version of the tag, or `None` if the tag is not a release for `tag_prefix`.
+
+    Like the crawler of Package Control (packagecontrol/thecrawl), strip the prefix, or a leading `v` if there is no
+    prefix, and accept only a strict SemVer version. So `tags: true` does not match a prefixed tag like `4205-1.0.0`.
+    """
+    if tag_prefix:
+        if not tag.startswith(tag_prefix):
+            return None
+        version = tag.removeprefix(tag_prefix)
+    else:
+        version = tag.removeprefix('v')
+    if not SEMVER_RE.match(version):
+        return None
+    try:
+        return PackageVersion(version)
+    except ValueError:
+        return None
+
+
 def get_sorted_releases(tags: list[str], tag_prefix: str | None) -> Generator[tuple[PackageVersion, str]]:
     used_versions = set()
     releases: list[tuple[PackageVersion, str]] = []
     for tag in tags:
-        version = version_match_prefix(tag, tag_prefix)
+        version = match_tag_version(tag, tag_prefix)
         if version and version not in used_versions:
             used_versions.add(version)
             releases.append((version, tag))
