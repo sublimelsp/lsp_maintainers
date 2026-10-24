@@ -6,7 +6,7 @@ license = "MIT"
 classifiers = ["Operating System :: OS Independent", "Programming Language :: Python :: 3"]
 # The libraries that the packages depend on are not listed here. Generate `requirements-packages.txt` with
 # `scripts/collect-dependencies.py` and install it with `uv pip install -r requirements-packages.txt`.
-dependencies = ["basedpyright==1.39.6"]
+dependencies = ["basedpyright==1.40.2"]
 
 [tool.pyright]
 pythonVersion = "3.8"
