@@ -82,7 +82,7 @@ runs:
         sys.exit(subprocess.run([sys.executable, '-B', 'scripts/checkout-repos.py', *args]).returncode)
 
     - name: Set up uv
-      uses: astral-sh/setup-uv@v10.3.0
+      uses: astral-sh/setup-uv@v10.3.2
 
     - name: Type-check packages
       shell: bash
