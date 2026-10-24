@@ -9,7 +9,6 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-import tomllib
 from package_version import PackageVersion
 from utils import is_compatible_version
 
@@ -20,6 +19,7 @@ REPOSITORIES_DIR = SCRIPT_DIR.parent / 'repositories'
 REQUIREMENTS_FILE = REPOSITORIES_DIR / 'requirements-packages.txt'
 # The checkout-repos.py script downloads the macOS build of Sublime Text.
 ST_INFO_PLIST = REPOSITORIES_DIR / 'Sublime Text.app' / 'Contents' / 'Info.plist'
+ST_MACOS_DIR = REPOSITORIES_DIR / 'Sublime Text.app' / 'Contents' / 'MacOS'
 STUBS_DIR = REPOSITORIES_DIR / 'stubs'
 
 
@@ -33,9 +33,14 @@ def get_st_version() -> int:
         return int(plistlib.load(f)['CFBundleVersion'])
 
 
+def parse_python_version(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in version.split('.'))
+
+
 def get_python_version() -> str:
-    pyproject = tomllib.loads((REPOSITORIES_DIR / 'pyproject.toml').read_text(encoding='utf-8'))
-    return pyproject['tool']['pyright']['pythonVersion']
+    """Return the Python version of the newest plugin host in the Sublime Text build, which runs the packages."""
+    versions = [path.name.removeprefix('plugin_host-') for path in ST_MACOS_DIR.glob('plugin_host-*')]
+    return max(versions, key=parse_python_version)
 
 
 def get_platform_selectors() -> list[str]:
@@ -77,14 +82,28 @@ def fetch_channel_libraries() -> dict[str, dict[str, Any]]:
 def get_latest_release(
     library: dict[str, Any], python_version: str, st_version: int, platform_selectors: list[str]
 ) -> dict[str, Any] | None:
+    """
+    Return the latest release of a Package Control library for `python_version`.
+
+    If no release supports `python_version`, return the latest release for the newest older Python version instead.
+    """
     releases = [
         release
         for release in library['releases']
-        if python_version in release['python_versions']
-        and is_compatible_version(release['sublime_text'], st_version)
+        if is_compatible_version(release['sublime_text'], st_version)
         and set(release['platforms']) & set(platform_selectors)
     ]
-    return max(releases, key=lambda release: PackageVersion(release['version']), default=None)
+    supported_versions = [
+        version
+        for release in releases
+        for version in release['python_versions']
+        if parse_python_version(version) <= parse_python_version(python_version)
+    ]
+    if not supported_versions:
+        return None
+    best_version = max(supported_versions, key=parse_python_version)
+    releases = [release for release in releases if best_version in release['python_versions']]
+    return max(releases, key=lambda release: PackageVersion(release['version']))
 
 
 def pypi_url_exists(url: str) -> bool:
@@ -122,7 +141,7 @@ def collect_dependencies(st_version: int) -> None:
 
     The function reads the `dependencies.json` file of each package and writes the requirements to
     `repositories/requirements-packages.txt`. It pins each library to the latest version that Package Control provides
-    for the Python version of the type check and for the Sublime Text build `st_version`. If PyPI does not have that
+    for the Python version of the plugin host and for the Sublime Text build `st_version`. If PyPI does not have that
     version, the requirement points to the wheel of the Package Control release. If that release has no wheel, the
     requirement is not pinned.
     """
