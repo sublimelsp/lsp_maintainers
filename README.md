@@ -101,7 +101,7 @@ on:
 jobs:
   type-check:
     name: Type-check community packages
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: sublimelsp/lsp_maintainers@main
