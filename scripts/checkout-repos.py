@@ -8,17 +8,13 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
-import urllib.parse
-import urllib.request
-import zipfile
 from collections.abc import Generator
 from pathlib import Path
 
-from dependencies import collect_dependencies
+from dependencies import collect_dependencies, get_latest_sublime_text_info
 from package_version import PackageVersion
 from utils import LSP_REPOSITORY_URL, get_lsp_packages_and_dependencies
 
-ST4_WEB_URL = 'https://www.sublimetext.com/download_thanks'
 SCRIPT_DIR = Path(__file__).resolve().parent
 # The SemVer pattern that the crawler of Package Control uses for tag releases.
 SEMVER_RE = re.compile(
@@ -31,25 +27,6 @@ SEMVER_RE = re.compile(
     r'$'
 )
 
-
-
-def download_latest_sublime_text(target_dir: Path) -> int:
-    with urllib.request.urlopen(urllib.request.Request(ST4_WEB_URL, headers={'User-Agent': 'Mozilla/5.0'})) as resp:
-        html = resp.read().decode('utf-8', errors='replace')
-    match = re.search(r'href="([^"]*_(\d+)_mac\.zip)"', html)
-    if match:
-        st_version = int(match.group(2))
-        zip_url = urllib.parse.urljoin(ST4_WEB_URL, match.group(1))
-        print(f"Downloading {zip_url} ...")
-        filepath, _ = urllib.request.urlretrieve(zip_url)
-        print(f"Extracting {filepath} ...")
-        with zipfile.ZipFile(filepath, 'r') as zf:
-            zf.extractall(target_dir)
-            print(f"Build {st_version} downloaded")
-        Path(filepath).unlink()
-        return st_version
-    else:
-        raise RuntimeError('Failed to found link to the latest version of Sublime Text')
 
 
 def run_subprocess(args: list[str], *, cwd: Path, check: bool = True) -> subprocess.CompletedProcess[bytes]:
@@ -248,9 +225,9 @@ def main():
     try:
         repositories_dir = SCRIPT_DIR.parent / 'repositories'
 
-        st_version = download_latest_sublime_text(repositories_dir)
+        st_info = get_latest_sublime_text_info()
 
-        packages, dependency_names = get_lsp_packages_and_dependencies(st_version, args.repository)
+        packages, dependency_names = get_lsp_packages_and_dependencies(st_info.build, args.repository)
         package_names = {p["name"] for p in packages}
         # A local package that is not in the package list, for example a new package that is not in the LSP repository.
         extra_local_names = local_packages.keys() - package_names - dependency_names
@@ -294,7 +271,7 @@ def main():
                 shutil.rmtree(dependency_dir)
 
         if not args.no_collect_dependencies:
-            collect_dependencies(st_version)
+            collect_dependencies(st_info)
     except KeyboardInterrupt:
         pass
 

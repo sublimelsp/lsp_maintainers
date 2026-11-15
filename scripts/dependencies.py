@@ -1,25 +1,26 @@
 from __future__ import annotations
 
+import io
 import json
 import platform
-import plistlib
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
+import zipfile
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 from package_version import PackageVersion
 from utils import is_compatible_version
 
 PACKAGE_CONTROL_CHANNEL_URL = 'https://packagecontrol.github.io/channel/channel_v4.json'
 PYPI_URL = 'https://pypi.org/pypi'
+ST_DOWNLOAD_PAGE_URL = 'https://www.sublimetext.com/download_thanks'
+HTTP_TIMEOUT = 60  # seconds
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPOSITORIES_DIR = SCRIPT_DIR.parent / 'repositories'
 REQUIREMENTS_FILE = REPOSITORIES_DIR / 'requirements-packages.txt'
-# The checkout-repos.py script downloads the macOS build of Sublime Text.
-ST_INFO_PLIST = REPOSITORIES_DIR / 'Sublime Text.app' / 'Contents' / 'Info.plist'
-ST_MACOS_DIR = REPOSITORIES_DIR / 'Sublime Text.app' / 'Contents' / 'MacOS'
 STUBS_DIR = REPOSITORIES_DIR / 'stubs'
 
 
@@ -28,19 +29,80 @@ def normalize_name(name: str) -> str:
     return re.sub(r'[-_.]+', '-', name).lower()
 
 
-def get_st_version() -> int:
-    with ST_INFO_PLIST.open('rb') as f:
-        return int(plistlib.load(f)['CFBundleVersion'])
+class SublimeTextInfo(NamedTuple):
+    build: int
+    # The Python version of the newest plugin host, which runs the packages.
+    python_version: str
+
+
+class HttpRangeFile(io.RawIOBase):
+    """A read-only file at a URL that fetches each read with an HTTP range request."""
+
+    def __init__(self, url: str) -> None:
+        super().__init__()
+        self.url = url
+        self.position = 0
+        with urllib.request.urlopen(urllib.request.Request(url, method='HEAD'), timeout=HTTP_TIMEOUT) as response:
+            self.size = int(response.headers['Content-Length'])
+
+    def readable(self) -> bool:
+        return True
+
+    def seekable(self) -> bool:
+        return True
+
+    def tell(self) -> int:
+        return self.position
+
+    def seek(self, offset: int, whence: int = io.SEEK_SET) -> int:
+        base = {io.SEEK_SET: 0, io.SEEK_CUR: self.position, io.SEEK_END: self.size}[whence]
+        self.position = base + offset
+        return self.position
+
+    def readinto(self, buffer: Any) -> int:
+        data = self.read_range(min(self.position + len(buffer), self.size))
+        buffer[:len(data)] = data
+        return len(data)
+
+    def readall(self) -> bytes:
+        return self.read_range(self.size)
+
+    def read_range(self, end: int) -> bytes:
+        if self.position >= end:
+            return b''
+        request = urllib.request.Request(self.url, headers={'Range': f'bytes={self.position}-{end - 1}'})
+        with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT) as response:
+            if response.status != 206:
+                raise RuntimeError(f'{self.url} does not support range requests')
+            data = response.read()
+        self.position += len(data)
+        return data
+
+
+def get_latest_sublime_text_info() -> SublimeTextInfo:
+    """
+    Return the latest Sublime Text build and the Python version of its newest plugin host.
+
+    The function reads only the list of files of the macOS zip, which is at the end of the zip, and not the whole zip.
+    """
+    request = urllib.request.Request(ST_DOWNLOAD_PAGE_URL, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT) as response:
+        html = response.read().decode('utf-8', errors='replace')
+    match = re.search(r'href="([^"]*_(\d+)_mac\.zip)"', html)
+    if not match:
+        raise RuntimeError('Failed to find the link to the latest version of Sublime Text')
+    zip_url = urllib.parse.urljoin(ST_DOWNLOAD_PAGE_URL, match.group(1))
+    build = int(match.group(2))
+    with HttpRangeFile(zip_url) as file, zipfile.ZipFile(file) as zf:
+        names = zf.namelist()
+    versions = [m.group(1) for name in names if (m := re.search(r'/MacOS/plugin_host-([\d.]+)$', name))]
+    if not versions:
+        raise RuntimeError(f'Failed to find a plugin host in {zip_url}')
+    return SublimeTextInfo(build, max(versions, key=parse_python_version))
 
 
 def parse_python_version(version: str) -> tuple[int, ...]:
     return tuple(int(part) for part in version.split('.'))
-
-
-def get_python_version() -> str:
-    """Return the Python version of the newest plugin host in the Sublime Text build, which runs the packages."""
-    versions = [path.name.removeprefix('plugin_host-') for path in ST_MACOS_DIR.glob('plugin_host-*')]
-    return max(versions, key=parse_python_version)
 
 
 def get_platform_selectors() -> list[str]:
@@ -135,17 +197,17 @@ def get_requirement(name: str, release: dict[str, Any]) -> str | None:
     return None
 
 
-def collect_dependencies(st_version: int) -> None:
+def collect_dependencies(st_info: SublimeTextInfo) -> None:
     """
     Write the PyPI requirements for the Package Control libraries that the packages in `repositories` depend on.
 
     The function reads the `dependencies.json` file of each package and writes the requirements to
     `repositories/requirements-packages.txt`. It pins each library to the latest version that Package Control provides
-    for the Python version of the plugin host and for the Sublime Text build `st_version`. If PyPI does not have that
+    for the Python version of the plugin host and for the build of `st_info`. If PyPI does not have that
     version, the requirement points to the wheel of the Package Control release. If that release has no wheel, the
     requirement is not pinned.
     """
-    python_version = get_python_version()
+    st_version, python_version = st_info
     platform_selectors = get_platform_selectors()
     print(f'Sublime Text build {st_version}, Python {python_version}, platform {platform_selectors[0]}')
 

@@ -14,9 +14,8 @@ typeCheckingMode = "standard"
 reportIncompatibleMethodOverride = "none"
 reportMissingModuleSource = "none"
 stubPath = "./stubs"
-extraPaths = ["Sublime Text.app/Contents/MacOS/Lib/python38/", "lsp_utils/"]
+extraPaths = ["lsp_utils/"]
 exclude = [
-  "./Sublime Text.app/",
   "./LSP-basedpyright/syntaxes",
   "./LSP-jdtls/modules",
   "./LSP-julia/testrunner",

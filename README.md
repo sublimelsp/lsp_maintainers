@@ -15,8 +15,8 @@ Commands:
 
 ## Type-check all packages
 
-The `scripts/checkout-repos.py` script downloads the latest Sublime Text build for macOS and the latest release of each
-package into the `repositories` directory. The type check uses the Python modules of that Sublime Text build. The script
+The `scripts/checkout-repos.py` script clones the latest release of each package that is compatible with the latest
+Sublime Text build into the `repositories` directory. The type check uses the Sublime Text API stubs of LSP. The script
 deletes and clones each package again on every run.
 
 ```sh
@@ -25,8 +25,9 @@ python3 scripts/checkout-repos.py
 
 After cloning, the script collects the libraries that the packages depend on. It reads the `dependencies.json` file of
 each package in `repositories` and writes the libraries to `repositories/requirements-packages.txt`. It pins each
-library to the version that Package Control provides for the Python version of the type check
-(`tool.pyright.pythonVersion` in `repositories/pyproject.toml`). If PyPI does not have that version (for example
+library to the version that Package Control provides for the Python version of the newest plugin host of the latest
+Sublime Text build. The script reads that version from the list of files of the macOS zip of the build, without
+downloading the zip. If PyPI does not have that version (for example
 `lsp_utils`), the requirement points to the wheel of the Package Control release. It does not write libraries that are
 checked out in `repositories` or that have stubs in `repositories/stubs`.
 

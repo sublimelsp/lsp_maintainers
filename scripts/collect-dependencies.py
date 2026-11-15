@@ -9,11 +9,11 @@ The checkout-repos.py script does this after cloning. Run this script again afte
 
 from __future__ import annotations
 
-from dependencies import collect_dependencies, get_st_version
+from dependencies import collect_dependencies, get_latest_sublime_text_info
 
 
 def main() -> None:
-    collect_dependencies(get_st_version())
+    collect_dependencies(get_latest_sublime_text_info())
 
 
 if __name__ == "__main__":
