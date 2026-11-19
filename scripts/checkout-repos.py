@@ -40,13 +40,6 @@ def export_git_archive(source_dir: Path, package_dir: Path) -> None:
     removes the .git directory, leaving a clean export in place. The source_dir
     can be package_dir itself.
     """
-    # LSP export-ignores its stubs, so copy them to the shared stubs directory before the export.
-    stubs_dir = source_dir / 'stubs'
-    if package_dir.name == 'LSP' and stubs_dir.is_dir():
-        target_stubs_dir = package_dir.parent / 'stubs'
-        if target_stubs_dir.is_dir():
-            shutil.rmtree(target_stubs_dir)
-        shutil.copytree(stubs_dir, target_stubs_dir)
     with tempfile.NamedTemporaryFile(suffix='.tar', delete=False) as tmp:
         tmp_path = Path(tmp.name)
     try:

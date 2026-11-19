@@ -13,7 +13,7 @@ pythonVersion = "3.8"
 typeCheckingMode = "standard"
 reportIncompatibleMethodOverride = "none"
 reportMissingModuleSource = "none"
-stubPath = "./stubs"
+stubPath = "../stubs"
 extraPaths = ["lsp_utils/"]
 exclude = [
   "./LSP-basedpyright/syntaxes",

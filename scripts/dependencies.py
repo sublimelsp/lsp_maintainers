@@ -21,7 +21,7 @@ HTTP_TIMEOUT = 60  # seconds
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPOSITORIES_DIR = SCRIPT_DIR.parent / 'repositories'
 REQUIREMENTS_FILE = REPOSITORIES_DIR / 'requirements-packages.txt'
-STUBS_DIR = REPOSITORIES_DIR / 'stubs'
+STUBS_DIR = SCRIPT_DIR.parent / 'stubs'
 
 
 def normalize_name(name: str) -> str:
