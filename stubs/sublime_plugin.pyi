@@ -3,6 +3,10 @@ from sublime import Buffer, CompletionItem, CompletionList, Edit, Html, ListInpu
 from typing import Any, TypeVar
 
 
+# Still used by the latest LSP release.
+view_event_listeners: dict[int, list[ViewEventListener]]  # undocumented
+
+
 _T_ViewEventListener = TypeVar("_T_ViewEventListener", bound=ViewEventListener)
 
 
